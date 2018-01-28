@@ -1,7 +1,8 @@
+import cv2
 from tkinter import N
 from unittest import result
 import face_recognition
-import cv2
+
 
 import pandas as pd
 import numpy as np

@@ -93,7 +93,7 @@ def f_recognize_names():
                 thread2.start()
                 #answer = input("Save name?")
 
-                answer = vosk_real_time.speech_recognition().lower()
+                answer = vosk_real_time.f_speech_recognition().lower()
                 list_check_person = []
                 if answer == "si":
                     face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=5, model="large")[0]
@@ -309,7 +309,7 @@ def f_save_name_id(new_face_encoding):
     thread3.start()
     
 
-    new_name = vosk_real_time.speech_recognition().capitalize()
+    new_name = vosk_real_time.f_speech_recognition().capitalize()
 
 
     global known_face_encodings

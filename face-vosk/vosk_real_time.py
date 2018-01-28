@@ -2,7 +2,7 @@ import vosk
 import pyaudio
 import json
 
-def speech_recognition():
+def f_speech_recognition():
     model = vosk.Model("vosk-es")
     recognizer = vosk.KaldiRecognizer(model, 16000)
 
