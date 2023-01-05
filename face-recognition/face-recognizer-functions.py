@@ -2,6 +2,7 @@ import face_recognition
 import cv2
 import numpy as np
 import pandas as pd
+import os
 
 # global variables 
 global known_face_encodings
@@ -100,21 +101,42 @@ def f_save_name(new_face_encoding):
     #print("new face: \n", new_face)
     new_face_array = np.array(new_face_encoding)
     new_face_array = new_face_array.reshape(1,-1)
-    print(new_face_array)
+    #print(new_face_array)
 
-    known_face_encodings.append(new_face_encoding)
+    known_face_encodings.append(new_face_array.flatten().tolist())
     #face_encodings.append(str(len(known_face_names)))
-    print("aqui face: ", "\n", new_face_encoding.tolist())
+    #print("aqui face: ", "\n", new_face_encoding.tolist())
     known_face_names.append(str(len(known_face_names)+1))
 
     new_data = pd.DataFrame(new_face_array)
-    new_data["Nombre"] = str(len(known_face_names)+1)
-    #print(new_data)
+    new_data["Nombre"] = str(len(known_face_names))
+    print("nuevos: \n",new_data)
 
-    all_data = pd.read_csv("./data/caras.csv")
-    all_data.append(new_data, ignore_index=True)
-    print(all_data)
-    all_data.to_csv("./data/caras.csv", index = False, mode='a')
+    try:
+
+        print(known_face_encodings)
+        da = pd.DataFrame(known_face_encodings)
+        da["Nombre"] = known_face_names
+
+        print("otra forma: \n", da)
+
+        da.to_csv("./data/caras.csv", index = False)
+
+        """all_data = pd.read_csv("./data/caras.csv")
+        print("antiguo \n",all_data)
+
+        df3 = pd.concat([all_data, new_data], ignore_index = False)
+        df3.reset_index()
+        print("unidos \n", df3)
+
+        os.remove("./data/caras.csv")        
+
+        df3 = all_data.append(new_data, ignore_index=False)
+        #print(all_data["Nombre"])
+        df3.to_csv("./data/caras.csv", index = False, mode='w')#, header=False)"""
+    except:
+        print("exception")
+        new_data.to_csv("./data/caras.csv", index = False)#, header=False)
 
 
 
@@ -122,7 +144,22 @@ def f_save_name(new_face_encoding):
 def f_start():
     f_reset_variables()
 
-    f_load_saved_faces()
+    try:
+        f_load_saved_faces()
+    except:
+        global known_face_encodings
+        global known_face_names
+        
+        known_face_names = []
+
+        known_face_encodings = []
+
+    """global known_face_encodings
+    global known_face_names
+    
+    known_face_names = []
+
+    known_face_encodings = []"""
 
     global face_locations
     global face_encodings
@@ -162,7 +199,11 @@ def f_start():
 
         # Hit 'q' on the keyboard to quit!
         if key == ord('q'):
+                # Release handle to the webcam
+            video_capture.release()
+            cv2.destroyAllWindows()
             break
+
         elif key == ord('s'): # and not "Unknown" in face_names:
             #nombre = input("Escribe tu nombre")
             print("guardando nombre")
@@ -176,3 +217,4 @@ def f_start():
 
 if __name__ == "__main__":
     f_start()
+

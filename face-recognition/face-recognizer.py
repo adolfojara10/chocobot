@@ -34,7 +34,15 @@ process_this_frame = True
 
 while True:
 
-    f_load_saved_faces()
+    try:
+
+        f_load_saved_faces()
+    except:
+        
+        known_face_names = []
+
+        known_face_encodings = []
+        
 
     ret, frame = video_capture.read()
 
