@@ -187,7 +187,7 @@ def f_start():
         face_locations = face_recognition.face_locations(rgb_small_frame, model="cnn", number_of_times_to_upsample=2)
 
         if face_locations != []:
-            face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+            face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=5, model_="large")
             f_recognize_names()
             
         else:
@@ -207,7 +207,7 @@ def f_start():
         elif key == ord('s'): # and not "Unknown" in face_names:
             #nombre = input("Escribe tu nombre")
             print("guardando nombre")
-            face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)[0]
+            face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=5, model_="large")[0]
             f_save_name(face_encodings)
 
 
