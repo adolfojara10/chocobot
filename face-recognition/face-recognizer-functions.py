@@ -44,7 +44,7 @@ def f_recognize_names():
     face_names = []
     for face_encoding in face_encodings:
         # See if the face is a match for the known face(s)
-        matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+        matches = face_recognition.compare_faces(known_face_encodings, face_encoding, tolerance=0.5)
         name = "Unknown"
 
         # # If a match was found in known_face_encodings, just use the first one.
@@ -110,15 +110,15 @@ def f_save_name(new_face_encoding):
 
     new_data = pd.DataFrame(new_face_array)
     new_data["Nombre"] = str(len(known_face_names))
-    print("nuevos: \n",new_data)
+    #print("nuevos: \n",new_data)
 
     try:
 
-        print(known_face_encodings)
+        #print(known_face_encodings)
         da = pd.DataFrame(known_face_encodings)
         da["Nombre"] = known_face_names
 
-        print("otra forma: \n", da)
+        #print("otra forma: \n", da)
 
         da.to_csv("./data/caras.csv", index = False)
 
@@ -139,6 +139,15 @@ def f_save_name(new_face_encoding):
         new_data.to_csv("./data/caras.csv", index = False)#, header=False)
 
 
+def f_prove_existance(prove_face_encoding):
+    global known_face_encodings
+
+    matches = face_recognition.compare_faces(known_face_encodings, prove_face_encoding)
+
+    if True in matches:
+        return True
+    else:
+        return False
 
 
 def f_start():
@@ -186,8 +195,10 @@ def f_start():
         # Find all the faces and face encodings in the current frame of video
         face_locations = face_recognition.face_locations(rgb_small_frame, model="cnn", number_of_times_to_upsample=2)
 
+        #print(face_locations)
+
         if face_locations != []:
-            face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=5, model_="large")
+            face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=5, model="large")
             f_recognize_names()
             
         else:
@@ -204,11 +215,24 @@ def f_start():
             cv2.destroyAllWindows()
             break
 
-        elif key == ord('s'): # and not "Unknown" in face_names:
+        elif key == ord('s'): # and not "Unknown" in face_names:sudo pip3 install -U jetson-stats
             #nombre = input("Escribe tu nombre")
             print("guardando nombre")
-            face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=5, model_="large")[0]
-            f_save_name(face_encodings)
+
+            
+            #face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=5, model="large")[0]
+            
+            if "Unknown" in face_names:
+
+                index = face_names.index("Unknown")
+
+                face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations[index], num_jitters=5, model="large")[0]               
+
+            #elif not f_prove_existance(face_encodings):
+           
+             #   f_save_name(face_encodings)
+            else:
+                print("Persona ya existe")
 
 
         # Display the resulting image
