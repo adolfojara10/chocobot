@@ -2,4 +2,4 @@
 arecord -L | grep plughw
 
 #github token(password)
-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
+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
