@@ -2,13 +2,13 @@ from vosk import Model, KaldiRecognizer
 import pyaudio
 import json
 
-model = Model("/home/catedra/Desktop/chocobot/vosk/vosk-es-big/vosk-model-es-0.42")
+model = Model("/home/catedra/Desktop/chocobot/vosk/vosk-es")
 recognizer = KaldiRecognizer(model, 16000)
 
 
 cap = pyaudio.PyAudio()
 stream = cap.open(format=pyaudio.paInt16, 
-#                  input_device_index=0,
+#                 input_device_index=0,
                   channels=1, 
                   rate=16000,
                   input=True, 
