@@ -1,5 +1,0 @@
-#to check input devices
-arecord -L | grep plughw
-
-#github token(password)
-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
