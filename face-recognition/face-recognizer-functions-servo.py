@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import pandas as pd
 import os
+import serial
 
 # global variables 
 global known_face_encodings
@@ -12,6 +13,9 @@ global face_encodings
 global face_names
 global frame
 global rgb_small_frame
+global arduino_communication
+
+
 
 def f_reset_variables():
     global face_locations
@@ -79,10 +83,18 @@ def f_draw_faces():
         bottom *= 4
         left *= 4
 
-        #print(face_locations)
+        print(top, right, bottom, left)
 
         # Draw a box around the face
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+
+        #center_face_x = (right-left)
+        #center_face_y = (bottom-top)
+
+        center_face_x = int(((right-left)/2)+left)
+        center_face_y = int(((bottom-top)/2)+top)
+        print(center_face_x, center_face_y)
+        cv2.circle(frame, (center_face_x, center_face_y), 4, (0,255,255), cv2.FILLED)
 
         # Draw a label with a name below the face
         cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
@@ -192,7 +204,7 @@ def f_start():
         # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
         rgb_small_frame = small_frame[:, :, ::-1]
         
-        # Find all the faces and face encodings in the current frame of video
+        # Find all the faces in the current frame of video
         face_locations = face_recognition.face_locations(rgb_small_frame, model="cnn", number_of_times_to_upsample=2)
 
         #print(face_locations)
@@ -239,6 +251,50 @@ def f_start():
         cv2.imshow('Video', frame)
 
 
+def f_connect_arduino():
+    global arduino_communication
+
+    arduino_communication = serial.Serial("/dev/ttyUSB0",9600, write_timeout=10)
+    print("conexion exitosa")
+
+
+def f_follow_person():
+    global face_locations
+    global frame
+
+    for (top, right, bottom, left) in face_locations:
+        top *= 4
+        right *= 4
+        bottom *= 4
+        left *= 4
+
+        # frame shape
+        height, width, c = frame.shape
+
+        #extract center of the face
+        center_face_x = (right-left) + left
+        center_face_y = (bottom-top) + top
+        cv2.drawCircle(frame, (center_face_x, center_face_y), 4, (0,0,255), cv2.FILLED)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 if __name__ == "__main__":
+    
+#    f_connect_arduino()
+
     f_start()
 
