@@ -58,10 +58,10 @@ def f_recognize_names():
 
         # Or instead, use the known face with the smallest distance to the new face
         face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
-        print(face_distances)
+        #print(face_distances)
         try:
             best_match_index = np.argmin(face_distances)
-            print(best_match_index, "----------------------", matches, "--------------")#, matches[best_match_index])
+            #print(best_match_index, "----------------------", matches, "--------------")#, matches[best_match_index])
             
 
             if matches[best_match_index]: #and best_match_index > 0.6:
@@ -83,7 +83,7 @@ def f_draw_faces():
         bottom *= 4
         left *= 4
 
-        print(top, right, bottom, left)
+        #print(top, right, bottom, left)
 
         # Draw a box around the face
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
@@ -91,15 +91,16 @@ def f_draw_faces():
         #center_face_x = (right-left)
         #center_face_y = (bottom-top)
 
-        center_face_x = int(((right-left)/2)+left)
+        """center_face_x = int(((right-left)/2)+left)
         center_face_y = int(((bottom-top)/2)+top)
         print(center_face_x, center_face_y)
-        cv2.circle(frame, (center_face_x, center_face_y), 4, (0,255,255), cv2.FILLED)
+        cv2.circle(frame, (center_face_x, center_face_y), 4, (0,255,255), cv2.FILLED)"""
 
         # Draw a label with a name below the face
         cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(frame, str(name), (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+        f_follow_person()
 
 
 def f_save_name(new_face_encoding):
@@ -261,6 +262,7 @@ def f_connect_arduino():
 def f_follow_person():
     global face_locations
     global frame
+    global arduino_communication
 
     for (top, right, bottom, left) in face_locations:
         top *= 4
@@ -269,25 +271,24 @@ def f_follow_person():
         left *= 4
 
         # frame shape
-        height, width, c = frame.shape
+        height, width, _ = frame.shape
 
         #extract center of the face
-        center_face_x = (right-left) + left
-        center_face_y = (bottom-top) + top
-        cv2.drawCircle(frame, (center_face_x, center_face_y), 4, (0,0,255), cv2.FILLED)
+        center_face_x = int(((right-left)/2)+left)
+        center_face_y = int(((bottom-top)/2)+top)
+        #print(center_face_x, center_face_y)
+        cv2.circle(frame, (center_face_x, center_face_y), 4, (0,255,255), cv2.FILLED)
 
+        #center of frame
+        center_frame = int(width/2)
 
-
-
-
-
-
-
-
-
-
-
-
+        if center_face_x < center_frame - 50:
+            #left movement
+            arduino_communication.write("i".encode())
+        elif center_face_x > center_frame + 50:
+            arduino_communication.write("d".encode())
+        elif center_face_x == center_frame:
+            arduino_communication.write("p".encode())
 
 
 
