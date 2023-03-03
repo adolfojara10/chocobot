@@ -1,9 +1,12 @@
+from tkinter import N
+from unittest import result
 import face_recognition
 import cv2
-import numpy as np
+
 import pandas as pd
+import numpy as np
 import os
-import serial
+#import serial
 
 # global variables 
 global known_face_encodings
@@ -100,7 +103,7 @@ def f_draw_faces():
         cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(frame, str(name), (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
-        f_follow_person()
+        #f_follow_person()
 
 
 def f_save_name(new_face_encoding):
@@ -189,6 +192,8 @@ def f_start():
     
     video_capture = cv2.VideoCapture(0)
 
+    i=0
+
     while True:
         
         global frame
@@ -197,6 +202,8 @@ def f_start():
         ret, frame = video_capture.read()
 
         frame = cv2.flip(frame, 1)
+
+        frame_clahe = f_automatic_brightness_and_contrast()
 
         #if process_this_frame:
         # Resize frame of video to 1/4 size for faster face recognition processing
@@ -247,9 +254,19 @@ def f_start():
             else:
                 print("Persona ya existe")
 
+        if i==1:
+
+            result = cv2.absdiff(cv2.cvtColor(frame_clahe, cv2.COLOR_BGR2GRAY), cv2.cvtColor(frame_clahe2, cv2.COLOR_BGR2GRAY))
+            _, result = cv2.threshold(result, 20, 255, cv2.THRESH_BINARY)
+            cv2.imshow("Movimiento", result)
+
+        frame_clahe2 = frame_clahe
+
+        i=1
 
         # Display the resulting image
         cv2.imshow('Video', frame)
+        cv2.imshow("Preprocesamiento", frame_clahe)
 
 
 def f_connect_arduino():
@@ -291,6 +308,53 @@ def f_follow_person():
             arduino_communication.write("p".encode())
 
 
+
+
+# Automatic brightness and contrast optimization with optional histogram clipping
+def f_automatic_brightness_and_contrast(clip_hist_percent=25):
+    global frame
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+    # Calculate grayscale histogram
+    hist = cv2.calcHist([gray],[0],None,[256],[0,256])
+    hist_size = len(hist)
+
+    # Calculate cumulative distribution from the histogram
+    accumulator = []
+    accumulator.append(float(hist[0]))
+    for index in range(1, hist_size):
+        accumulator.append(accumulator[index -1] + float(hist[index]))
+
+    # Locate points to clip
+    maximum = accumulator[-1]
+    clip_hist_percent *= (maximum/100.0)
+    clip_hist_percent /= 2.0
+
+    # Locate left cut
+    minimum_gray = 0
+    while accumulator[minimum_gray] < clip_hist_percent:
+        minimum_gray += 1
+
+    # Locate right cut
+    maximum_gray = hist_size -1
+    while accumulator[maximum_gray] >= (maximum - clip_hist_percent):
+        maximum_gray -= 1
+
+    # Calculate alpha and beta values
+    alpha = 255 / (maximum_gray - minimum_gray)
+    beta = -minimum_gray * alpha
+
+    '''
+    # Calculate new histogram with desired range and show histogram 
+    new_hist = cv2.calcHist([gray],[0],None,[256],[minimum_gray,maximum_gray])
+    plt.plot(hist)
+    plt.plot(new_hist)
+    plt.xlim([0,256])
+    plt.show()
+    '''
+
+    auto_result = cv2.convertScaleAbs(frame, alpha=alpha, beta=beta)
+    return auto_result
 
 
 if __name__ == "__main__":
