@@ -6,7 +6,7 @@ import cv2
 import pandas as pd
 import numpy as np
 import os
-#import serial
+import serial
 
 # global variables 
 global known_face_encodings
@@ -103,7 +103,7 @@ def f_draw_faces():
         cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(frame, str(name), (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
-        #f_follow_person()
+        f_follow_person()
 
 
 def f_save_name(new_face_encoding):
@@ -359,7 +359,7 @@ def f_automatic_brightness_and_contrast(clip_hist_percent=25):
 
 if __name__ == "__main__":
     
-#    f_connect_arduino()
+    f_connect_arduino()
 
     f_start()
 
