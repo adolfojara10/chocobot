@@ -8,7 +8,7 @@ recognizer = KaldiRecognizer(model, 16000)
 
 cap = pyaudio.PyAudio()
 stream = cap.open(format=pyaudio.paInt16, 
-#                 input_device_index=0,
+#                  input_device_index=0,
                   channels=1, 
                   rate=16000,
                   input=True, 
