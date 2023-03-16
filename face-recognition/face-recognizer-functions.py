@@ -151,6 +151,7 @@ def f_prove_existance(prove_face_encoding):
 
 
 def f_start():
+    print("hola")
     f_reset_variables()
 
     try:
@@ -162,7 +163,7 @@ def f_start():
         known_face_names = []
 
         known_face_encodings = []
-
+    print("hola")
     """global known_face_encodings
     global known_face_names
     
@@ -240,5 +241,6 @@ def f_start():
 
 
 if __name__ == "__main__":
+    print("hola")
     f_start()
 

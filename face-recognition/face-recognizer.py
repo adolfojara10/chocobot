@@ -1,5 +1,9 @@
-import face_recognition
 import cv2
+print("hola")
+import face_recognition
+print("hola")
+
+print("hola")
 import numpy as np
 import pandas as pd
 

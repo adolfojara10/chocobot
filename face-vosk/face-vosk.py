@@ -1,5 +1,6 @@
-import face_recognition
 import cv2
+import face_recognition
+
 import numpy as np
 import pandas as pd
 import os
@@ -73,7 +74,7 @@ def f_recognize_names():
 
                 #should call to save the new person and ask the name
                 elif name != "Unknown":
-                    pass
+                    f_save_name()
 
 
         except ValueError:
@@ -130,11 +131,14 @@ def f_save_name(new_face_encoding):
 
         #print(known_face_encodings)
         da = pd.DataFrame(known_face_encodings)
-        da["Nombre"] = known_face_names
+        nombre = input("¿Cual es tu nombre?")
+        da["Nombre"] = nombre
 
         #print("otra forma: \n", da)
 
         da.to_csv("./data/caras.csv", index = False)
+
+        print("usuario guardado")
 
         """all_data = pd.read_csv("./data/caras.csv")
         print("antiguo \n",all_data)
