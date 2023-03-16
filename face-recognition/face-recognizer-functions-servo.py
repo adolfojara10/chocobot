@@ -284,6 +284,7 @@ def f_follow_person():
 
         if center_face_x < center_frame - 50:
             #left movement
+            print("izquierda")
             arduino_communication.write("i".encode())
         elif center_face_x > center_frame + 50:
             arduino_communication.write("d".encode())
@@ -295,7 +296,7 @@ def f_follow_person():
 
 if __name__ == "__main__":
     
-#    f_connect_arduino()
+    f_connect_arduino()
 
     f_start()
 
