@@ -1,0 +1,10 @@
+install opencv:
+https://forums.developer.nvidia.com/t/compiling-opencv-on-jetpack-5/219668/3
+
+install dlib-face_recognition:
+https://www.youtube.com/watch?v=UVdy4XUmiVU
+
+instal vscode:
+VERSION=1.65.2
+wget -N -O vscode-linux-deb.arm64.deb https://update.code.visualstudio.com/$VERSION/linux-deb-arm64/stable
+sudo apt install ./vscode-linux-deb.arm64.deb

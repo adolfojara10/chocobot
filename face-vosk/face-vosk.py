@@ -1,12 +1,8 @@
-from tkinter import N
-from unittest import result
 import face_recognition
 import cv2
-
-import pandas as pd
 import numpy as np
+import pandas as pd
 import os
-import serial
 
 # global variables 
 global known_face_encodings
@@ -16,22 +12,23 @@ global face_encodings
 global face_names
 global frame
 global rgb_small_frame
-global arduino_communication
-
-
+global name_person
 
 def f_reset_variables():
     global face_locations
     global face_encodings
     global face_names
+    global name_person
 
     face_locations = []
     face_encodings = []
     face_names = []
+    name_person = ""
 
 # function to load saved faces
 def f_load_saved_faces():
     data = pd.read_csv("./data/caras.csv")
+    #print(data)
 
     global known_face_names    
     known_face_names = data["Nombre"].tolist()
@@ -47,6 +44,7 @@ def f_recognize_names():
     global face_encodings
     global known_face_names
     global known_face_encodings
+    global name_person
 
     face_names = []
     for face_encoding in face_encodings:
@@ -69,6 +67,15 @@ def f_recognize_names():
 
             if matches[best_match_index]: #and best_match_index > 0.6:
                 name = known_face_names[best_match_index]
+                if name_person == "" and name != "Unknown":
+                    name_person = name
+                    f_say_hi()
+
+                #should call to save the new person and ask the name
+                elif name != "Unknown":
+                    pass
+
+
         except ValueError:
             pass
         face_names.append(name)
@@ -86,24 +93,15 @@ def f_draw_faces():
         bottom *= 4
         left *= 4
 
-        #print(top, right, bottom, left)
+        #print(face_locations)
 
         # Draw a box around the face
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-
-        #center_face_x = (right-left)
-        #center_face_y = (bottom-top)
-
-        """center_face_x = int(((right-left)/2)+left)
-        center_face_y = int(((bottom-top)/2)+top)
-        print(center_face_x, center_face_y)
-        cv2.circle(frame, (center_face_x, center_face_y), 4, (0,255,255), cv2.FILLED)"""
 
         # Draw a label with a name below the face
         cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(frame, str(name), (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
-        f_follow_person()
 
 
 def f_save_name(new_face_encoding):
@@ -192,8 +190,6 @@ def f_start():
     
     video_capture = cv2.VideoCapture(0)
 
-    i=0
-
     while True:
         
         global frame
@@ -203,8 +199,6 @@ def f_start():
 
         frame = cv2.flip(frame, 1)
 
-        frame_clahe = f_automatic_brightness_and_contrast()
-
         #if process_this_frame:
         # Resize frame of video to 1/4 size for faster face recognition processing
         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
@@ -212,7 +206,7 @@ def f_start():
         # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
         rgb_small_frame = small_frame[:, :, ::-1]
         
-        # Find all the faces in the current frame of video
+        # Find all the faces and face encodings in the current frame of video
         face_locations = face_recognition.face_locations(rgb_small_frame, model="cnn", number_of_times_to_upsample=2)
 
         #print(face_locations)
@@ -254,113 +248,19 @@ def f_start():
             else:
                 print("Persona ya existe")
 
-        if i==1:
-
-            result = cv2.absdiff(cv2.cvtColor(frame_clahe, cv2.COLOR_BGR2GRAY), cv2.cvtColor(frame_clahe2, cv2.COLOR_BGR2GRAY))
-            _, result = cv2.threshold(result, 20, 255, cv2.THRESH_BINARY)
-            cv2.imshow("Movimiento", result)
-
-        frame_clahe2 = frame_clahe
-
-        i=1
 
         # Display the resulting image
         cv2.imshow('Video', frame)
-        cv2.imshow("Preprocesamiento", frame_clahe)
 
 
-def f_connect_arduino():
-    global arduino_communication
+#function to say hi or to ask for the name
+def f_say_hi():
+    global name_person
 
-    arduino_communication = serial.Serial("/dev/ttyUSB0",9600, write_timeout=10)
-    print("conexion exitosa")
+    print("\n Holaa ", str(name_person))
 
-
-def f_follow_person():
-    global face_locations
-    global frame
-    global arduino_communication
-
-    for (top, right, bottom, left) in face_locations:
-        top *= 4
-        right *= 4
-        bottom *= 4
-        left *= 4
-
-        # frame shape
-        height, width, _ = frame.shape
-
-        #extract center of the face
-        center_face_x = int(((right-left)/2)+left)
-        center_face_y = int(((bottom-top)/2)+top)
-        #print(center_face_x, center_face_y)
-        cv2.circle(frame, (center_face_x, center_face_y), 4, (0,255,255), cv2.FILLED)
-
-        #center of frame
-        center_frame = int(width/2)
-
-        if center_face_x < center_frame - 50:
-            #left movement
-            print("izquierda")
-            arduino_communication.write("i".encode())
-        elif center_face_x > center_frame + 50:
-            arduino_communication.write("d".encode())
-        elif center_face_x == center_frame:
-            arduino_communication.write("p".encode())
-
-
-
-
-# Automatic brightness and contrast optimization with optional histogram clipping
-def f_automatic_brightness_and_contrast(clip_hist_percent=25):
-    global frame
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    # Calculate grayscale histogram
-    hist = cv2.calcHist([gray],[0],None,[256],[0,256])
-    hist_size = len(hist)
-
-    # Calculate cumulative distribution from the histogram
-    accumulator = []
-    accumulator.append(float(hist[0]))
-    for index in range(1, hist_size):
-        accumulator.append(accumulator[index -1] + float(hist[index]))
-
-    # Locate points to clip
-    maximum = accumulator[-1]
-    clip_hist_percent *= (maximum/100.0)
-    clip_hist_percent /= 2.0
-
-    # Locate left cut
-    minimum_gray = 0
-    while accumulator[minimum_gray] < clip_hist_percent:
-        minimum_gray += 1
-
-    # Locate right cut
-    maximum_gray = hist_size -1
-    while accumulator[maximum_gray] >= (maximum - clip_hist_percent):
-        maximum_gray -= 1
-
-    # Calculate alpha and beta values
-    alpha = 255 / (maximum_gray - minimum_gray)
-    beta = -minimum_gray * alpha
-
-    '''
-    # Calculate new histogram with desired range and show histogram 
-    new_hist = cv2.calcHist([gray],[0],None,[256],[minimum_gray,maximum_gray])
-    plt.plot(hist)
-    plt.plot(new_hist)
-    plt.xlim([0,256])
-    plt.show()
-    '''
-
-    auto_result = cv2.convertScaleAbs(frame, alpha=alpha, beta=beta)
-    return auto_result
 
 
 if __name__ == "__main__":
-    
-    f_connect_arduino()
-
     f_start()
 
