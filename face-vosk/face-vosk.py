@@ -1,6 +1,5 @@
 import cv2
 import face_recognition
-
 import numpy as np
 import pandas as pd
 import os
@@ -8,23 +7,27 @@ import os
 # global variables 
 global known_face_encodings
 global known_face_names 
+global known_face_ids
 global face_locations
 global face_encodings
 global face_names
 global frame
 global rgb_small_frame
 global name_person
+global list_check_person
 
 def f_reset_variables():
     global face_locations
     global face_encodings
     global face_names
     global name_person
+    global list_check_person
 
     face_locations = []
     face_encodings = []
     face_names = []
     name_person = ""
+    list_check_person = []
 
 # function to load saved faces
 def f_load_saved_faces():
@@ -35,7 +38,10 @@ def f_load_saved_faces():
     known_face_names = data["Nombre"].tolist()
 
     global known_face_encodings
-    known_face_encodings = data.iloc[:,0:-1].values.tolist()
+    known_face_encodings = data.iloc[:,0:-2].values.tolist()
+
+    global known_face_ids
+    known_face_ids = data["ID"].tolist()
 
     #print(known_face_encodings.values.tolist())
 
@@ -46,6 +52,7 @@ def f_recognize_names():
     global known_face_names
     global known_face_encodings
     global name_person
+    global list_check_person
 
     face_names = []
     for face_encoding in face_encodings:
@@ -68,13 +75,31 @@ def f_recognize_names():
 
             if matches[best_match_index]: #and best_match_index > 0.6:
                 name = known_face_names[best_match_index]
+                list_check_person.append(1)
                 if name_person == "" and name != "Unknown":
                     name_person = name
                     f_say_hi()
 
-                #should call to save the new person and ask the name
-                elif name != "Unknown":
-                    f_save_name()
+            #should call to save the new person and ask the name
+            elif name_person != "" and list_check_person.count(0)==50:
+                answer = input("Save name?")
+                list_check_person = []
+                if answer == "si":
+                    face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=5, model="large")[0]
+                    f_save_name_id(face_encodings)
+                else:
+                    pass 
+                
+
+                
+
+            elif name == "Unknown":
+                list_check_person.append(0)
+                print(len(list_check_person))
+
+            if len(list_check_person)==100:
+                list_check_person = []
+
 
 
         except ValueError:
@@ -132,7 +157,8 @@ def f_save_name(new_face_encoding):
         #print(known_face_encodings)
         da = pd.DataFrame(known_face_encodings)
         nombre = input("¿Cual es tu nombre?")
-        da["Nombre"] = nombre
+        
+        da["Nombre"] = known_face_names
 
         #print("otra forma: \n", da)
 
@@ -262,6 +288,62 @@ def f_say_hi():
     global name_person
 
     print("\n Holaa ", str(name_person))
+
+
+def f_save_name_id(new_face_encoding):
+    new_name = input("Write your name: ")
+
+
+    global known_face_encodings
+    global known_face_names
+    global known_face_ids
+
+    new_face_array = np.array(new_face_encoding)
+    new_face_array = new_face_array.reshape(1,-1)
+    print(new_face_array)
+
+
+    known_face_encodings.append(new_face_array.flatten().tolist())
+    known_face_ids.append(str(len(known_face_names)+1))
+    known_face_names.append(new_name)
+    
+    #known_face_names.append(str(len(known_face_names)+1))
+
+    new_data = pd.DataFrame(new_face_array)
+    new_data["ID"] = str(len(known_face_names))
+    new_data["Nombre"] = new_name
+
+    try:
+
+        #print(known_face_encodings)
+        da = pd.DataFrame(known_face_encodings)
+        #nombre = input("¿Cual es tu nombre?")
+        da["ID"] = known_face_ids
+        da["Nombre"] = known_face_names
+
+        #print("otra forma: \n", da)
+
+        da.to_csv("./data/caras.csv", index = False)
+
+        print("usuario guardado")
+
+        """all_data = pd.read_csv("./data/caras.csv")
+        print("antiguo \n",all_data)
+
+        df3 = pd.concat([all_data, new_data], ignore_index = False)
+        df3.reset_index()
+        print("unidos \n", df3)
+
+        os.remove("./data/caras.csv")        
+
+        df3 = all_data.append(new_data, ignore_index=False)
+        #print(all_data["Nombre"])
+        df3.to_csv("./data/caras.csv", index = False, mode='w')#, header=False)"""
+    except:
+        print("exception")
+        new_data.to_csv("./data/caras.csv", index = False)#, header=False)
+
+
 
 
 
