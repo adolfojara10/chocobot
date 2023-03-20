@@ -12,6 +12,7 @@ def speech_recognition():
     empty_recognitions = 0
     is_answer = False
     print("------------habla-----------------")
+    respuesta = ""
     while True:
         data = stream.read(4000, exception_on_overflow=False)
         if len(data) == 0:
@@ -20,10 +21,11 @@ def speech_recognition():
             result = json.loads(recognizer.Result())
             if result['text'] != "":
                 is_answer = True
+                respuesta += result["text"]
                 empty_recognitions = 0
             else:
                 empty_recognitions += 1
-            print(result['text'])
+            #print(result['text'])
         
         if empty_recognitions == 3 and is_answer:
             break
@@ -32,4 +34,6 @@ def speech_recognition():
     stream.stop_stream()
     stream.close()
     p.terminate()
+
+    return respuesta
 

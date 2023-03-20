@@ -3,6 +3,9 @@ import face_recognition
 import numpy as np
 import pandas as pd
 import os
+import TTS
+import threading
+import vosk_real_time
 
 # global variables 
 global known_face_encodings
@@ -76,19 +79,27 @@ def f_recognize_names():
             if matches[best_match_index]: #and best_match_index > 0.6:
                 name = known_face_names[best_match_index]
                 list_check_person.append(1)
+
+                #greet the person
                 if name_person == "" and name != "Unknown":
                     name_person = name
-                    f_say_hi()
+                    thread1 = threading.Thread(target= f_say_hi)
+                    thread1.start()
 
             #should call to save the new person and ask the name
             elif name_person != "" and list_check_person.count(0)==50:
-                answer = input("Save name?")
+                list_check_person = []
+                thread2 = threading.Thread(target= TTS.f_say_text("¿Deseas guardar tu nombre?"))
+                thread2.start()
+                #answer = input("Save name?")
+
+                answer = vosk_real_time.speech_recognition().lower()
                 list_check_person = []
                 if answer == "si":
                     face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=5, model="large")[0]
                     f_save_name_id(face_encodings)
                 else:
-                    pass 
+                    pass
                 
 
                 
@@ -287,11 +298,18 @@ def f_start():
 def f_say_hi():
     global name_person
 
-    print("\n Holaa ", str(name_person))
+    text = "Hola, " + str(name_person)
+
+    TTS.f_say_text(text)
 
 
 def f_save_name_id(new_face_encoding):
-    new_name = input("Write your name: ")
+
+    thread3 = threading.Thread(target= TTS.f_say_text("¿Cómo te llamas?"))
+    thread3.start()
+    
+
+    new_name = vosk_real_time.speech_recognition().capitalize()
 
 
     global known_face_encodings
