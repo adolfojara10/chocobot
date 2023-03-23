@@ -1,59 +1,82 @@
+# Python program to open the
+# camera in Tkinter
+# Import the libraries,
+# tkinter, cv2, Image and ImageTk
+
+from tkinter import *
 import cv2
-import tkinter as tk
 from PIL import Image, ImageTk
 
-class CameraWindow:
 
-    def __init__(self, master):
-        self.master = master
-        self.cap = cv2.VideoCapture(0)
-        self.create_widgets()
 
-    def create_widgets(self):
-        # Create a canvas to display the camera feed
-        self.canvas = tk.Canvas(self.master, width=640, height=480)
-        self.canvas.pack(side=tk.LEFT)
+# Declare the width and height in variables
+width, height = 800, 600
 
-        # Create two text inputs and a button to save on the right
-        self.frame = tk.Frame(self.master)
-        self.frame.pack(side=tk.RIGHT, padx=10, pady=10)
+# Set the width and height
+#vid.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+#vid.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 
-        self.label1 = tk.Label(self.frame, text="Input 1:")
-        self.label1.pack()
+# Create a GUI app
+app = Tk()
 
-        self.entry1 = tk.Entry(self.frame)
-        self.entry1.pack()
+# Bind the app with Escape keyboard to
+# quit app whenever pressed
+app.bind('<Escape>', lambda e: app.quit())
 
-        self.label2 = tk.Label(self.frame, text="Input 2:")
-        self.label2.pack()
+app.geometry("720x720")
 
-        self.entry2 = tk.Entry(self.frame)
-        self.entry2.pack()
+# Create a label and display it on app
+label_widget = Label(app)
+label_widget.pack()
 
-        self.button = tk.Button(self.frame, text="Save")
-        self.button.pack()
+def iniciar():
+    pass
 
-        # Start the camera feed
-        self.update()
+inicio = Button(app, text="Iniciar", command=iniciar)
+inicio.place(x = 100, y = 580)
 
-    def update(self):
-        # Get a frame from the camera
-        ret, frame = self.cap.read()
+inputtxt = Text(app,
+                   height = 5,
+                   width = 20)
 
-        # Convert the frame from BGR to RGB
-        image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+# Create a function to open camera and
+# display it in the label_widget on app
 
-        # Convert the image to a PIL ImageTk object
-        photo = ImageTk.PhotoImage(image=Image.fromarray(image))
 
-        # Display the image on the canvas
-        self.canvas.create_image(0, 0, anchor=tk.NW, image=photo)
 
-        # Call this function again after 15 milliseconds
-        self.canvas.after(15, self.update)
+def open_camera():
 
-if __name__ == '__main__':
-    root = tk.Tk()
-    app = CameraWindow(root)
-    root.mainloop()
+    # Define a video capture object
+    vid = cv2.VideoCapture(0)
 
+    # Capture the video frame by frame
+    ret, frame = vid.read()
+
+    frame = cv2.flip(frame, 1)
+
+    # Convert image from one color space to other
+    opencv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+
+    # Capture the latest frame and transform to image
+    captured_image = Image.fromarray(opencv_image)
+
+    # Convert captured image to photoimage
+    photo_image = ImageTk.PhotoImage(image=captured_image)
+
+    # Displaying photoimage in the label
+    label_widget.photo_image = photo_image
+
+    # Configure image in the label
+    label_widget.configure(image=photo_image)
+
+    # Repeat the same process after every 10 seconds
+    label_widget.after(5, open_camera)
+
+
+# Create a button to open the camera in GUI app
+#button1 = Button(app, text="Open Camera", command=open_camera)
+#button1.pack()
+
+open_camera()
+# Create an infinite loop for displaying app on screen
+app.mainloop()

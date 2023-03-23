@@ -300,6 +300,8 @@ def f_follow_person():
         #center of frame
         center_frame = int(width/2)
 
+        
+
         if center_face_x < center_frame - 50:
             #left movement
             print("izquierda")

@@ -6,6 +6,7 @@ import os
 import TTS
 import threading
 import vosk_real_time
+import tkinter2
 
 # global variables 
 global known_face_encodings
@@ -13,11 +14,13 @@ global known_face_names
 global known_face_ids
 global face_locations
 global face_encodings
+global new_face_encoding
 global face_names
 global frame
 global rgb_small_frame
 global name_person
 global list_check_person
+global window_new_face
 
 def f_reset_variables():
     global face_locations
@@ -25,12 +28,14 @@ def f_reset_variables():
     global face_names
     global name_person
     global list_check_person
+    global window_new_face
 
     face_locations = []
     face_encodings = []
     face_names = []
     name_person = ""
     list_check_person = []
+    window_new_face = False
 
 # function to load saved faces
 def f_load_saved_faces():
@@ -52,10 +57,12 @@ def f_load_saved_faces():
 def f_recognize_names():
     global face_names
     global face_encodings
+    global new_face_encodings
     global known_face_names
     global known_face_encodings
     global name_person
     global list_check_person
+    global window_new_face
 
     face_names = []
     for face_encoding in face_encodings:
@@ -87,7 +94,7 @@ def f_recognize_names():
                     thread1.start()
 
             #should call to save the new person and ask the name
-            elif name_person != "" and list_check_person.count(0)==50:
+            elif name_person != "" and list_check_person.count(0)==50 and not window_new_face:
                 list_check_person = []
                 thread2 = threading.Thread(target= TTS.f_say_text("¿Deseas guardar tu nombre?"))
                 thread2.start()
@@ -96,8 +103,13 @@ def f_recognize_names():
                 answer = vosk_real_time.f_speech_recognition().lower()
                 list_check_person = []
                 if answer == "si":
-                    face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=5, model="large")[0]
-                    f_save_name_id(face_encodings)
+                    new_face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=5, model="large")[0]
+                    #f_save_name_id(face_encodings)
+                    window_new_face = True
+                    thread4 =threading.Thread(target=f_call_window_new_face)
+                    thread4.start()
+
+                    
                 else:
                     pass
                 
@@ -228,6 +240,7 @@ def f_start():
     global face_locations
     global face_encodings
     global face_names
+    global window_new_face
     
     video_capture = cv2.VideoCapture(0)
 
@@ -258,6 +271,11 @@ def f_start():
             
         else:
             face_encodings = []
+
+            #closes the window in case it has been opened
+            if window_new_face:
+                f_call_window_new_face()
+
 
         f_draw_faces()
 
@@ -303,18 +321,22 @@ def f_say_hi():
     TTS.f_say_text(text)
 
 
-def f_save_name_id(new_face_encoding):
+def f_save_name_id():
 
-    thread3 = threading.Thread(target= TTS.f_say_text("¿Cómo te llamas?"))
-    thread3.start()
+    #thread3 = threading.Thread(target= TTS.f_say_text("¿Cómo te llamas?"))
+    #thread3.start()
     
-
-    new_name = vosk_real_time.f_speech_recognition().capitalize()
-
 
     global known_face_encodings
     global known_face_names
     global known_face_ids
+    global new_face_encodings
+
+    #new_name = vosk_real_time.f_speech_recognition().capitalize()
+
+    nombres, apellidos = tkinter2.save_inputs()
+    new_name = nombres + " " + apellidos
+    new_name = new_name.capitalize()
 
     new_face_array = np.array(new_face_encoding)
     new_face_array = new_face_array.reshape(1,-1)
@@ -362,6 +384,20 @@ def f_save_name_id(new_face_encoding):
         new_data.to_csv("./data/caras.csv", index = False)#, header=False)
 
 
+def f_call_window_new_face():
+    global known_face_names
+    thread3 = threading.Thread(target=tkinter2.start())
+    if window_new_face:
+        thread3.start()
+    elif not window_new_face and thread3.isAlive():
+        tkinter2.change_state_thread(False)
+        thread3.join()
+        nombres, apellidos = tkinter2.save_inputs()
+        new_name = nombres + " " + apellidos
+        new_name = new_name.capitalize()
+
+        if not new_name in known_face_names:
+            f_save_name_id()
 
 
 
