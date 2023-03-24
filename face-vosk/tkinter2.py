@@ -4,14 +4,25 @@ from PIL import Image, ImageTk
 import threading as th
 import time
 
-global run_thread, root, value1, value2
+global run_thread, root, value1, value2, save_name
+run_thread = False
+save_name = False
 
 def save_inputs():
-    global value1, value2
+    global value1, value2, save_name, root
     # Get the values from the text inputs and save them
     value1 = entry1.get()
     value2 = entry2.get()
     print(f"Value 1: {value1}, Value 2: {value2}")
+
+    save_name = True
+
+    root.destroy()
+
+    #return value1, value2
+
+def return_name_values():
+    global value1, value2
 
     return value1, value2
 
@@ -74,8 +85,9 @@ def open_camera():
     
 
 def start():
-    global root, vid, run_thread, value1, value2
+    global root, vid, run_thread, value1, value2, save_name
 
+    save_name = False
     value1=""
     value2=""
 
@@ -83,32 +95,33 @@ def start():
     run_thread=True
 
     # Define a video capture object
-    vid = cv2.VideoCapture(0)
+    #vid = cv2.VideoCapture(0)
 
     root = tk.Tk()
 
     root.geometry("700x700")
 
-    t_camera = th.Thread(target=open_camera)
+    #t_camera = th.Thread(target=open_camera)
     #t_window = th.Thread(target=root.mainloop)
 
 
     
 
     create_widgets()
-    t_camera.start()
+    #t_camera.start()
     #t_window.start()
     root.mainloop()
-
+"""
 def change_state_thread(state):
     global run_thread, root
     run_thread = state
-    if not run_thread:
+    if run_thread==False:
         root.quit()
+"""
 
-if __name__ == '__main__':
+"""if __name__ == '__main__':
     t_start = th.Thread(target=start)
-    t_start.start()
+    t_start.start()"""
     #start()
     #time.sleep(6)
     #print("hola")
