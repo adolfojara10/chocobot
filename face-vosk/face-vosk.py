@@ -295,9 +295,10 @@ def f_start():
             
         else:
             face_encodings = []
-#            list_check_person.append(-1)
+            list_check_person.append(-1)
 
-            name_person = ""
+            if list_check_person.count(-1)==30:
+                name_person = ""
 
             
 

@@ -33,3 +33,5 @@ def speech_recognition():
     stream.close()
     p.terminate()
 
+if __name__ == "__main__":
+    speech_recognition()
