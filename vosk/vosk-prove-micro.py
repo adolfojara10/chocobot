@@ -2,7 +2,7 @@ from vosk import Model, KaldiRecognizer
 import pyaudio
 import json
 
-model = Model("vosk-es")
+model = Model("/home/catedra/Desktop/chocobot/chocobot/face-vosk/vosk-es")
 recognizer = KaldiRecognizer(model, 16000)
 
 

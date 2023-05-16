@@ -43,7 +43,7 @@ def f_reset_variables():
 
 # function to load saved faces
 def f_load_saved_faces():
-    data = pd.read_csv("./data/caras.csv")
+    data = pd.read_csv("/home/catedra/Desktop/chocobot/chocobot/face-vosk/data/caras.csv")
     #print(data)
 
     global known_face_names    

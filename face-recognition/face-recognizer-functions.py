@@ -1,8 +1,9 @@
-import face_recognition
 import cv2
+import face_recognition
+
 import numpy as np
 import pandas as pd
-import os
+#import os
 
 # global variables 
 global known_face_encodings
@@ -24,7 +25,7 @@ def f_reset_variables():
 
 # function to load saved faces
 def f_load_saved_faces():
-    data = pd.read_csv("./data/caras.csv")
+    data = pd.read_csv("/home/catedra/Desktop/chocobot/chocobot/face-recognition/data/caras.csv")
 
     global known_face_names    
     known_face_names = data["Nombre"].tolist()
@@ -32,7 +33,7 @@ def f_load_saved_faces():
     global known_face_encodings
     known_face_encodings = data.iloc[:,0:-1].values.tolist()
 
-    #print(known_face_encodings.values.tolist())
+    print(known_face_encodings)
 
 
 def f_recognize_names():
@@ -156,7 +157,9 @@ def f_start():
 
     try:
         f_load_saved_faces()
-    except:
+    except Exception as e:
+
+        print(e)
         global known_face_encodings
         global known_face_names
         

@@ -14,13 +14,15 @@ def f_speech_recognition():
     host = "172.16.219.242"
     port = 1234  # socket server port number
 
+    
+    p = pyaudio.PyAudio()
+    stream = p.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8192)
+
     client_socket = socket.socket()  # instantiate
     client_socket.connect((host, port))  # connect to the server
 
     
 
-    p = pyaudio.PyAudio()
-    stream = p.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8192)
 
     empty_recognitions = 0
     is_answer = False
@@ -77,4 +79,4 @@ def f_speech_recognition():
 
 
 if __name__ == "__main__":
-    f_speech_recognition()4000
+    f_speech_recognition()
