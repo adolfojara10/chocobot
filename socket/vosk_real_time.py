@@ -11,7 +11,7 @@ def f_speech_recognition():
     model = vosk.Model("/home/catedra/Desktop/chocobot/chocobot/face-vosk/vosk-es")
     recognizer = vosk.KaldiRecognizer(model, 16000)
 
-    host = "172.16.212.34"
+    host = "172.16.219.242"
     port = 1234  # socket server port number
 
     client_socket = socket.socket()  # instantiate
@@ -29,33 +29,42 @@ def f_speech_recognition():
     #data = client_socket.recv(1024).decode()
     print("------------habla-----------------")
     respuesta = ""
-    while True:
-        data = stream.read(4000, exception_on_overflow=False)
+    flag_loop = True
+    while flag_loop:
+        data = stream.read(1600, exception_on_overflow=False)
         if len(data) == 0:
             empty_recognitions += 1
+            print("1")
         if recognizer.AcceptWaveform(data):
             result = json.loads(recognizer.Result())
             if result['text'] != "":
                 is_answer = True
                 respuesta += result["text"]
                 empty_recognitions = 0
+                print("2")
             else:
                 empty_recognitions += 1
+                print("3")
             #print(result['text'])
         
-        if empty_recognitions == 2 and is_answer:
+        if empty_recognitions == 1 and is_answer:
             print(respuesta)
             #message = input(respuesta)  # take input
             client_socket.send(respuesta.encode())  # send message
-            data = client_socket.recv(1024).decode()  # receive response
+            data_received = client_socket.recv(1024).decode()  # receive response
 
-            respuesta = ""
+            
+            data = ""
+            empty_recognitions = 0
             is_answer = False
 
-            print('Received from server: ' + data)  # show in terminal
+            print('Received from server: ' + data_received)  # show in terminal
 
             if respuesta in lista_despedida:
+                flag_loop = False
                 break
+
+            respuesta = ""
 
     
     client_socket.close()  # close the connection
@@ -68,4 +77,4 @@ def f_speech_recognition():
 
 
 if __name__ == "__main__":
-    f_speech_recognition()
+    f_speech_recognition()4000
