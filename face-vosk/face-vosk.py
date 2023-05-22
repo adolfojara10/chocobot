@@ -5,7 +5,7 @@ import pandas as pd
 import os
 import TTS
 import threading
-#import vosk_real_time
+import vosk_real_time
 import tkinter2
 
 # global variables 
@@ -97,8 +97,23 @@ def f_recognize_names():
                 #greet the person
                 if name_person == "" and name != "Unknown" and list_check_person.count(1)==17:
                     name_person = name
-                    thread1 = threading.Thread(target= f_say_hi)
-                    thread1.start()
+                    # thread1 = threading.Thread(target= f_say_hi)
+                    # thread1.start()
+
+                    f_say_hi()
+
+
+                    TTS.f_say_text("¿Quieres comenzar una conversación?")
+
+
+                    answer_conversation = vosk_real_time.f_speech_recognition()
+
+                    if answer_conversation == "si":
+                        pass
+
+
+
+
 
             #should call to save the new person and ask the name
             elif name_person == "" and list_check_person.count(0)==30 and answer_create_user=="no":
@@ -267,6 +282,7 @@ def f_start():
     global list_check_person
     
     video_capture = cv2.VideoCapture(0)
+
 
     while True:
         

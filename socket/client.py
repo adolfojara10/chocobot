@@ -2,8 +2,10 @@ import socket
 
 
 def client_program():
-    host = "172.16.212.34"
-    port = 1234  # socket server port number
+    #host = "172.16.7.102"
+    host = "192.168.135.209"
+    #host = "127.0.0.1"
+    port = 5005  # socket server port number
 
     client_socket = socket.socket()  # instantiate
     client_socket.connect((host, port))  # connect to the server

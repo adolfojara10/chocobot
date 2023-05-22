@@ -11,15 +11,18 @@ def f_speech_recognition():
     model = vosk.Model("/home/catedra/Desktop/chocobot/chocobot/face-vosk/vosk-es")
     recognizer = vosk.KaldiRecognizer(model, 16000)
 
-    host = "172.16.219.242"
-    port = 1234  # socket server port number
+    #host = "172.16.219.242"
+    host = "192.168.78.209"
+    port = 5005  # socket server port number
+
+    client_socket = socket.socket()  # instantiate
+    client_socket.connect((host, port))  # connect to the server
 
     
     p = pyaudio.PyAudio()
     stream = p.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8192)
 
-    client_socket = socket.socket()  # instantiate
-    client_socket.connect((host, port))  # connect to the server
+
 
     
 
@@ -36,21 +39,22 @@ def f_speech_recognition():
         data = stream.read(1600, exception_on_overflow=False)
         if len(data) == 0:
             empty_recognitions += 1
-            print("1")
+            #print("1")
         if recognizer.AcceptWaveform(data):
             result = json.loads(recognizer.Result())
             if result['text'] != "":
                 is_answer = True
                 respuesta += result["text"]
                 empty_recognitions = 0
-                print("2")
+                #print("2")
             else:
                 empty_recognitions += 1
-                print("3")
+                #print("3")
             #print(result['text'])
         
         if empty_recognitions == 1 and is_answer:
             print(respuesta)
+            stream.stop_stream()
             #message = input(respuesta)  # take input
             client_socket.send(respuesta.encode())  # send message
             data_received = client_socket.recv(1024).decode()  # receive response
@@ -64,8 +68,10 @@ def f_speech_recognition():
 
             if respuesta in lista_despedida:
                 flag_loop = False
+                #client_socket.close()
                 break
-
+            
+            stream.start_stream()
             respuesta = ""
 
     

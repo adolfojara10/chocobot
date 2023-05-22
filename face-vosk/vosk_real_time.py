@@ -27,7 +27,7 @@ def f_speech_recognition():
                 empty_recognitions += 1
             #print(result['text'])
         
-        if empty_recognitions == 3 and is_answer:
+        if empty_recognitions == 2 and is_answer:
             break
     
     print("respuesta guardada")
