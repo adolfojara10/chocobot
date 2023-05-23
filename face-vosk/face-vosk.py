@@ -7,6 +7,8 @@ import TTS
 import threading
 import vosk_real_time
 import tkinter2
+import time
+import vosk_socket
 
 # global variables 
 global known_face_encodings
@@ -108,8 +110,13 @@ def f_recognize_names():
 
                     answer_conversation = vosk_real_time.f_speech_recognition()
 
-                    if answer_conversation == "si":
-                        pass
+                    print(answer_conversation)
+
+                    if answer_conversation == "si" or answer_conversation == "sí":
+                        vosk_socket.f_speech_recognition()
+                        print("Conexion con servidor exitosa")
+                        time.sleep(2)
+                        #TTS.f_say_text("Empecemos")
 
 
 
@@ -118,18 +125,19 @@ def f_recognize_names():
             #should call to save the new person and ask the name
             elif name_person == "" and list_check_person.count(0)==30 and answer_create_user=="no":
                 list_check_person = []
-                thread2 = threading.Thread(target= TTS.f_say_text("¿Deseas guardar tu nombre?"))
-                thread2.start()
+                # thread2 = threading.Thread(target= TTS.f_say_text("¿Deseas guardar tu nombre?"))
+                # thread2.start()
                 #answer = input("Save name?")
 
+                TTS.f_say_text("¿Deseas guardar tu nombre?")
+
                 #descomentar esta linea para que funcione con vosk
-                """
-                answer = vosk_real_time.f_speech_recognition().lower()
-                """
-                answer_create_user = "si"
+                
+                answer_create_user = vosk_real_time.f_speech_recognition().lower()
+
                 list_check_person = []
                 #if answer_create_user == "si" and window_new_face==False and tkinter2.run_thread == False:
-                if answer_create_user == "si":
+                if answer_create_user == "si" or answer_create_user == "sí":
 
                     print("abrir ventana")
                     new_face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=5, model="large")[0]
@@ -255,6 +263,10 @@ def f_prove_existance(prove_face_encoding):
 
 
 def f_start():
+
+    vosk_real_time.f_start_model()
+    vosk_socket.f_start_model()
+
     f_reset_variables()
 
     try:
@@ -361,16 +373,16 @@ def f_say_hi():
 
     text = "Hola, " + str(name_person)
 
-    print("text")
+    print(text)
 
     TTS.f_say_text(text)
 
 
 def f_save_name_id():
 
-    thread3 = threading.Thread(target= TTS.f_say_text("¿Cómo te llamas?"))
-    thread3.start()
-    thread3.join()
+    # thread3 = threading.Thread(target= TTS.f_say_text("¿Cómo te llamas?"))
+    # thread3.start()
+    # thread3.join()
     
 
     global known_face_encodings
