@@ -3,25 +3,27 @@ import pyaudio
 import json
 import socket
 
-global lista_despedida, model ,recognizer, p
+global lista_despedida, model ,recognizer, p, stream
 
 lista_despedida = ["chao", "adios", "adiós", "hasta luego", "nos vemos"]
 
 def f_start_model():
 
-    global model ,recognizer, p
+    global model ,recognizer, p, stream
 
     model = vosk.Model("/home/catedra/Desktop/chocobot/chocobot/face-vosk/vosk-es")
     recognizer = vosk.KaldiRecognizer(model, 16000)
 
     p = pyaudio.PyAudio()
 
+    
+
 
 
 
 def f_speech_recognition():
 
-    global model ,recognizer, p
+    global model ,recognizer, p, stream
 
     #host = "172.16.219.242"
     host = "192.168.205.209"
@@ -29,14 +31,8 @@ def f_speech_recognition():
 
     client_socket = socket.socket()  # instantiate
     client_socket.connect((host, port))  # connect to the server
-
-    
-
-    stream = p.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8192)
-
-
-
-    
+   
+    stream = p.open(format=pyaudio.paInt16, channels=1, rate=44100, input=True, frames_per_buffer=8192)
 
 
     empty_recognitions = 0
@@ -48,7 +44,7 @@ def f_speech_recognition():
     respuesta = ""
     flag_loop = True
     while flag_loop:
-        data = stream.read(1600, exception_on_overflow=False)
+        data = stream.read(4000, exception_on_overflow=False)
         if len(data) == 0:
             empty_recognitions += 1
             #print("1")
@@ -69,7 +65,7 @@ def f_speech_recognition():
             stream.stop_stream()
             #message = input(respuesta)  # take input
             client_socket.send(respuesta.encode())  # send message
-            data_received = client_socket.recv(1024).decode()  # receive response
+            data_received = client_socket.recv(4096).decode()  # receive response
 
             
             data = ""

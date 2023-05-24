@@ -97,6 +97,8 @@ def f_recognize_names():
                 list_check_person.append(1)
 
                 #greet the person
+
+
                 if name_person == "" and name != "Unknown" and list_check_person.count(1)==17:
                     name_person = name
                     # thread1 = threading.Thread(target= f_say_hi)
@@ -118,7 +120,7 @@ def f_recognize_names():
                         time.sleep(2)
                         #TTS.f_say_text("Empecemos")
 
-
+                    name_person = ""
 
 
 
@@ -224,13 +226,13 @@ def f_save_name(new_face_encoding):
 
         #print(known_face_encodings)
         da = pd.DataFrame(known_face_encodings)
-        nombre = input("¿Cual es tu nombre?")
+        #nombre = input("¿Cual es tu nombre?")
         
         da["Nombre"] = known_face_names
 
         #print("otra forma: \n", da)
 
-        da.to_csv("./data/caras.csv", index = False)
+        da.to_csv("/home/catedra/Desktop/chocobot/chocobot/face-vosk/data/caras.csv", index = False)
 
         print("usuario guardado")
 
@@ -248,7 +250,7 @@ def f_save_name(new_face_encoding):
         df3.to_csv("./data/caras.csv", index = False, mode='w')#, header=False)"""
     except:
         print("exception")
-        new_data.to_csv("./data/caras.csv", index = False)#, header=False)
+        new_data.to_csv("/home/catedra/Desktop/chocobot/chocobot/face-vosk/data/caras.csv", index = False)#, header=False)
 
 
 def f_prove_existance(prove_face_encoding):
@@ -421,7 +423,9 @@ def f_save_name_id():
 
         #print("otra forma: \n", da)
 
-        da.to_csv("./data/caras.csv", index = False)
+        print(da)
+
+        da.to_csv("/home/catedra/Desktop/chocobot/chocobot/face-vosk/data/caras.csv", index = False)
 
         print("usuario guardado")
 
@@ -438,7 +442,7 @@ def f_save_name_id():
         #print(all_data["Nombre"])
         df3.to_csv("./data/caras.csv", index = False, mode='w')#, header=False)"""
     except:
-        print("exception")
+        print("exception---------------------")
         new_data.to_csv("./data/caras.csv", index = False)#, header=False)
 
 
