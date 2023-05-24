@@ -2,6 +2,7 @@ import vosk
 import pyaudio
 import json
 import socket
+import TTS
 
 global lista_despedida, model ,recognizer, p, stream
 
@@ -67,6 +68,7 @@ def f_speech_recognition():
             client_socket.send(respuesta.encode())  # send message
             data_received = client_socket.recv(4096).decode()  # receive response
 
+            TTS.f_say_text(data_received)
             
             data = ""
             empty_recognitions = 0
