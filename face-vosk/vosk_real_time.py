@@ -50,3 +50,7 @@ def f_speech_recognition():
 
     return respuesta
 
+
+if __name__ == "__main__":
+    f_start_model()
+    f_speech_recognition()

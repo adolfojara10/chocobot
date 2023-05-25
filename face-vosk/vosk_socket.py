@@ -6,7 +6,7 @@ import TTS
 
 global lista_despedida, model ,recognizer, p, stream
 
-lista_despedida = ["chao", "adios", "adiós", "hasta luego", "nos vemos"]
+lista_despedida = [" chao", " adios", " adiós", " hasta luego", " nos vemos"]
 
 def f_start_model():
 
@@ -15,7 +15,7 @@ def f_start_model():
     model = vosk.Model("/home/catedra/Desktop/chocobot/chocobot/face-vosk/vosk-es")
     recognizer = vosk.KaldiRecognizer(model, 16000)
 
-    p = pyaudio.PyAudio()
+    
 
     
 
@@ -25,15 +25,17 @@ def f_start_model():
 def f_speech_recognition():
 
     global model ,recognizer, p, stream
+    
+    p = pyaudio.PyAudio()
 
     #host = "172.16.219.242"
-    host = "192.168.205.209"
+    host = "192.168.134.209"
     port = 5005  # socket server port number
 
     client_socket = socket.socket()  # instantiate
     client_socket.connect((host, port))  # connect to the server
    
-    stream = p.open(format=pyaudio.paInt16, channels=1, rate=44100, input=True, frames_per_buffer=8192)
+    stream = p.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8192)
 
 
     empty_recognitions = 0
@@ -45,7 +47,7 @@ def f_speech_recognition():
     respuesta = ""
     flag_loop = True
     while flag_loop:
-        data = stream.read(4000, exception_on_overflow=False)
+        data = stream.read(4096, exception_on_overflow=False)
         if len(data) == 0:
             empty_recognitions += 1
             #print("1")
@@ -53,13 +55,14 @@ def f_speech_recognition():
             result = json.loads(recognizer.Result())
             if result['text'] != "":
                 is_answer = True
+                respuesta += " "
                 respuesta += result["text"]
                 empty_recognitions = 0
                 #print("2")
             else:
                 empty_recognitions += 1
                 #print("3")
-            #print(result['text'])
+            print(result['text'])
         
         if empty_recognitions == 1 and is_answer:
             print(respuesta)
@@ -95,4 +98,5 @@ def f_speech_recognition():
 
 
 if __name__ == "__main__":
+    f_start_model()
     f_speech_recognition()
