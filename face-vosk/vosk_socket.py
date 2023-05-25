@@ -3,22 +3,40 @@ import pyaudio
 import json
 import socket
 import TTS
+import serial
+import subprocess
 
-global lista_despedida, model ,recognizer, p, stream
+
+global lista_despedida, model ,recognizer, p, stream, serial_connection
 
 lista_despedida = [" chao", " adios", " adiós", " hasta luego", " nos vemos"]
 
 def f_start_model():
 
-    global model ,recognizer, p, stream
+    global model ,recognizer, p, stream, serial_connection
 
     model = vosk.Model("/home/catedra/Desktop/chocobot/chocobot/face-vosk/vosk-es")
     recognizer = vosk.KaldiRecognizer(model, 16000)
 
-    
+    serial_port = "/dev/ttyUSB0"
+    baud_rate = 9600
 
-    
 
+
+    serial_connection = serial.Serial(serial_port, baud_rate)
+
+    command = "sudo chmod a+rw /dev/ttyUSB0"
+
+    subprocess.call(command, shell=True)
+
+
+
+def send_number_words_arduino(number_words):
+    global serial_connection
+
+    value_bytes = str(number_words).encode()
+
+    serial_connection.write(value_bytes)  
 
 
 
@@ -29,7 +47,7 @@ def f_speech_recognition():
     p = pyaudio.PyAudio()
 
     #host = "172.16.219.242"
-    host = "192.168.134.209"
+    host = "192.168.238.209"
     port = 5005  # socket server port number
 
     client_socket = socket.socket()  # instantiate
@@ -70,6 +88,10 @@ def f_speech_recognition():
             #message = input(respuesta)  # take input
             client_socket.send(respuesta.encode())  # send message
             data_received = client_socket.recv(4096).decode()  # receive response
+
+
+
+            send_number_words_arduino(len(data_received.split()))
 
             TTS.f_say_text(data_received)
             
