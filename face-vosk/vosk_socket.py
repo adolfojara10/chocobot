@@ -5,11 +5,12 @@ import socket
 import TTS
 import serial
 import subprocess
+import numpy as np
 
 
 global lista_despedida, model ,recognizer, p, stream, serial_connection
 
-lista_despedida = [" chao", " adios", " adiós", " hasta luego", " nos vemos"]
+lista_despedida = ["chao ", "adios ", "adiós ", "hasta luego ", "nos vemos "]
 
 def f_start_model():
 
@@ -73,8 +74,9 @@ def f_speech_recognition():
             result = json.loads(recognizer.Result())
             if result['text'] != "":
                 is_answer = True
-                respuesta += " "
+                
                 respuesta += result["text"]
+                respuesta += " "
                 empty_recognitions = 0
                 #print("2")
             else:
@@ -85,23 +87,26 @@ def f_speech_recognition():
         if empty_recognitions == 1 and is_answer:
             print(respuesta)
             stream.stop_stream()
+            if respuesta not in lista_despedida:
             #message = input(respuesta)  # take input
-            client_socket.send(respuesta.encode())  # send message
-            data_received = client_socket.recv(4096).decode()  # receive response
+                client_socket.send(respuesta.encode())  # send message
+                data_received = client_socket.recv(4096).decode()  # receive response
 
 
 
-            send_number_words_arduino(len(data_received.split()))
+                send_number_words_arduino(np.ceil(len(data_received.split())/2))
 
-            TTS.f_say_text(data_received)
-            
-            data = ""
-            empty_recognitions = 0
-            is_answer = False
+                TTS.f_say_text(data_received)
+                
+                data = ""
+                empty_recognitions = 0
+                is_answer = False
 
-            print('Received from server: ' + data_received)  # show in terminal
+                print('Received from server: ' + data_received)  # show in terminal
 
-            if respuesta in lista_despedida:
+            else:
+
+                TTS.f_say_text("Hasta luego. Espero verte pronto.")
                 flag_loop = False
                 #client_socket.close()
                 break
