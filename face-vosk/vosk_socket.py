@@ -26,9 +26,11 @@ def f_start_model():
 
     serial_connection = serial.Serial(serial_port, baud_rate)
 
-    command = "sudo chmod a+rw /dev/ttyUSB0"
+    send_number_words_arduino(-2)
 
-    subprocess.call(command, shell=True)
+    # command = "sudo chmod a+rw /dev/ttyUSB0"
+
+    # subprocess.call(command, shell=True)
 
 
 
@@ -48,7 +50,7 @@ def f_speech_recognition():
     p = pyaudio.PyAudio()
 
     #host = "172.16.219.242"
-    host = "192.168.238.209"
+    host = "192.168.117.209"
     port = 5005  # socket server port number
 
     client_socket = socket.socket()  # instantiate
@@ -63,6 +65,7 @@ def f_speech_recognition():
     #client_socket.send(message.encode())  # send message
     #data = client_socket.recv(1024).decode()
     print("------------habla-----------------")
+    send_number_words_arduino(-1)
     respuesta = ""
     flag_loop = True
     while flag_loop:
@@ -86,6 +89,8 @@ def f_speech_recognition():
         
         if empty_recognitions == 1 and is_answer:
             print(respuesta)
+
+            send_number_words_arduino(0)
             stream.stop_stream()
             if respuesta not in lista_despedida:
             #message = input(respuesta)  # take input
@@ -107,6 +112,7 @@ def f_speech_recognition():
             else:
 
                 TTS.f_say_text("Hasta luego. Espero verte pronto.")
+                send_number_words_arduino(-2)
                 flag_loop = False
                 #client_socket.close()
                 break
@@ -116,7 +122,7 @@ def f_speech_recognition():
 
     
     client_socket.close()  # close the connection
-    print("respuesta guardada")
+    print("Sesión terminada")
     stream.stop_stream()
     stream.close()
     p.terminate()
