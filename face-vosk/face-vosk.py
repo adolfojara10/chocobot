@@ -9,6 +9,7 @@ import vosk_real_time
 import tkinter2
 import time
 import vosk_socket
+import subprocess
 
 # global variables 
 global known_face_encodings
@@ -107,7 +108,16 @@ def f_recognize_names():
                     f_say_hi()
 
 
-                    TTS.f_say_text("¿Quieres comenzar una conversación?")
+
+
+
+                    # Construct the command to play the audio file
+                    play_command = f"aplay /home/catedra/Desktop/chocobot/chocobot/audios/empezar_conversacion.wav"
+
+                    # Execute the command to play the audio file
+                    subprocess.run(play_command, shell=True)
+
+                    #TTS.f_say_text("¿Quieres comenzar una conversación?")
 
 
                     answer_conversation = vosk_real_time.f_speech_recognition()
@@ -377,7 +387,26 @@ def f_say_hi():
 
     print(text)
 
-    TTS.f_say_text(text)
+    #TTS.f_say_text(data_received)
+
+    directory = '/home/catedra/Desktop/chocobot/chocobot/audios/'
+    file_count = len(os.listdir(directory))
+
+    # Generate the output file name
+    output_file = os.path.join(directory, f'welcome_{file_count}.wav')
+
+                
+    # Construct the command to generate the audio file
+    generate_command = f"echo '{text}' | /home/catedra/piper/piper/piper --model /home/catedra/piper/es-mls_9972-low.onnx --output_file {output_file}"
+
+    # Execute the command to generate the audio file
+    subprocess.run(generate_command, shell=True)
+
+    # Construct the command to play the audio file
+    play_command = f"aplay {output_file}"
+
+    # Execute the command to play the audio file
+    subprocess.run(play_command, shell=True)
 
 
 def f_save_name_id():

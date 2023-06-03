@@ -6,6 +6,7 @@ import TTS
 import serial
 import subprocess
 import numpy as np
+import os
 
 
 global lista_despedida, model ,recognizer, p, stream, serial_connection
@@ -50,7 +51,7 @@ def f_speech_recognition():
     p = pyaudio.PyAudio()
 
     #host = "172.16.219.242"
-    host = "192.168.117.209"
+    host = "192.168.189.209"
     port = 5005  # socket server port number
 
     client_socket = socket.socket()  # instantiate
@@ -101,7 +102,28 @@ def f_speech_recognition():
 
                 send_number_words_arduino(np.ceil(len(data_received.split())/2))
 
-                TTS.f_say_text(data_received)
+                #TTS.f_say_text(data_received)
+
+                directory = '/home/catedra/Desktop/chocobot/chocobot/audios/'
+                file_count = len(os.listdir(directory))
+
+                # Generate the output file name
+                output_file = os.path.join(directory, f'welcome_{file_count}.wav')
+
+                            
+                # Construct the command to generate the audio file
+                generate_command = f"echo '{data_received}' | /home/catedra/piper/piper/piper --model /home/catedra/piper/es-mls_9972-low.onnx --output_file {output_file}"
+
+                # Execute the command to generate the audio file
+                subprocess.run(generate_command, shell=True)
+
+                # Construct the command to play the audio file
+                play_command = f"aplay {output_file}"
+
+                # Execute the command to play the audio file
+                subprocess.run(play_command, shell=True)
+
+
                 
                 data = ""
                 empty_recognitions = 0
