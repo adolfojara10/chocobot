@@ -119,8 +119,12 @@ def f_recognize_names():
 
                     #TTS.f_say_text("¿Quieres comenzar una conversación?")
 
+                    vosk_socket.send_number_words_arduino(-1)
+
 
                     answer_conversation = vosk_real_time.f_speech_recognition()
+
+                    vosk_socket.send_number_words_arduino(0)
 
                     print(answer_conversation)
 
@@ -141,11 +145,24 @@ def f_recognize_names():
                 # thread2.start()
                 #answer = input("Save name?")
 
-                TTS.f_say_text("¿Deseas guardar tu nombre?")
+                #TTS.f_say_text("¿Deseas guardar tu nombre?")
+
+                # Construct the command to play the audio file
+                play_command = f"aplay /home/catedra/Desktop/chocobot/chocobot/audios/guardar_nombre.wav"
+
+                # Execute the command to play the audio file
+                subprocess.run(play_command, shell=True)
+
+                vosk_socket.send_number_words_arduino(-1)
 
                 #descomentar esta linea para que funcione con vosk
                 
                 answer_create_user = vosk_real_time.f_speech_recognition().lower()
+
+
+                vosk_socket.send_number_words_arduino(0)
+
+
 
                 list_check_person = []
                 #if answer_create_user == "si" and window_new_face==False and tkinter2.run_thread == False:
@@ -402,6 +419,7 @@ def f_say_hi():
     # Execute the command to generate the audio file
     subprocess.run(generate_command, shell=True)
 
+    time.sleep(2)
     # Construct the command to play the audio file
     play_command = f"aplay {output_file}"
 

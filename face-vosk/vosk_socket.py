@@ -7,6 +7,8 @@ import serial
 import subprocess
 import numpy as np
 import os
+from gtts import gTTS
+import pygame
 
 
 global lista_despedida, model ,recognizer, p, stream, serial_connection
@@ -23,9 +25,13 @@ def f_start_model():
     serial_port = "/dev/ttyUSB0"
     baud_rate = 9600
 
+    
+
 
 
     serial_connection = serial.Serial(serial_port, baud_rate)
+
+    
 
     send_number_words_arduino(-2)
 
@@ -62,6 +68,8 @@ def f_speech_recognition():
 
     empty_recognitions = 0
     is_answer = False
+
+    pygame.init()
 
     #client_socket.send(message.encode())  # send message
     #data = client_socket.recv(1024).decode()
@@ -100,10 +108,37 @@ def f_speech_recognition():
 
 
 
+                
+
+
+                tts = gTTS(text=data_received, lang='es-us')
+
+                directory = '/home/catedra/Desktop/chocobot/chocobot/audios/'
+                file_count = len(os.listdir(directory))
+
+                # Generate the output file name
+                output_file = os.path.join(directory, f'welcome_{file_count}.mp3')
+
+               
+                # Save the audio file
+                tts.save(output_file)
+
+                # Load the audio file
+                pygame.mixer.music.load(output_file)
+
                 send_number_words_arduino(np.ceil(len(data_received.split())/2))
 
-                #TTS.f_say_text(data_received)
+                # Play the audio file
+                pygame.mixer.music.play()
 
+                # Wait until playback is finished
+                while pygame.mixer.music.get_busy():
+                    continue
+
+
+
+                #TTS.f_say_text(data_received)
+                """
                 directory = '/home/catedra/Desktop/chocobot/chocobot/audios/'
                 file_count = len(os.listdir(directory))
 
@@ -121,7 +156,7 @@ def f_speech_recognition():
                 play_command = f"aplay {output_file}"
 
                 # Execute the command to play the audio file
-                subprocess.run(play_command, shell=True)
+                subprocess.run(play_command, shell=True)"""
 
 
                 
@@ -132,7 +167,8 @@ def f_speech_recognition():
                 print('Received from server: ' + data_received)  # show in terminal
 
             else:
-
+                client_socket.send(respuesta.encode())
+                
                 TTS.f_say_text("Hasta luego. Espero verte pronto.")
                 send_number_words_arduino(-2)
                 flag_loop = False
@@ -143,6 +179,7 @@ def f_speech_recognition():
             respuesta = ""
 
     
+    pygame.quit()
     client_socket.close()  # close the connection
     print("Sesión terminada")
     stream.stop_stream()
