@@ -59,7 +59,7 @@ def f_speech_recognition():
     p = pyaudio.PyAudio()
 
     #host = "172.16.219.242"
-    host = "192.168.189.209"
+    host = "192.168.93.209"
     port = 5005  # socket server port number
 
     client_socket = socket.socket()  # instantiate
@@ -110,11 +110,6 @@ def f_speech_recognition():
 
                 #data_received = "hola como estas"
 
-                
-
-                
-
-
                 tts = gTTS(text=data_received, lang='es-us')
 
                 directory = '/home/catedra/Desktop/chocobot/chocobot/audios/'
@@ -131,7 +126,6 @@ def f_speech_recognition():
                 send_number_words_arduino(np.ceil(len(data_received.split())/2))
                 play(audio)
 
-                
 
                 """
 
@@ -210,12 +204,25 @@ def f_speech_recognition():
             respuesta = ""
 
     
-    pygame.quit()
+    # pygame.quit()
     client_socket.close()  # close the connection
     print("Sesión terminada")
     stream.stop_stream()
     stream.close()
     p.terminate()
+
+    #delete all the audio files created in the session
+    directory = "/home/catedra/Desktop/chocobot/chocobot/audios/"
+
+    # Get a list of all files in the directory
+    file_list = os.listdir(directory)
+
+    # Iterate over the files and delete them
+    for file_name in file_list:
+        file_path = os.path.join(directory, file_name)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+            print(f"Deleted file: {file_path}")
 
     return respuesta
 
