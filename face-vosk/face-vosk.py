@@ -10,6 +10,8 @@ import tkinter2
 import time
 import vosk_socket
 import subprocess
+import pygame
+from gtts import gTTS
 
 # global variables 
 global known_face_encodings
@@ -43,6 +45,8 @@ def f_reset_variables():
     list_check_person = []
     window_new_face = False
     answer_create_user = "no"
+
+    pygame.init()
 
 # function to load saved faces
 def f_load_saved_faces():
@@ -108,16 +112,25 @@ def f_recognize_names():
                     f_say_hi()
 
 
+                    pygame.mixer.music.load("/home/catedra/Desktop/chocobot/chocobot/audios/empezar_conversacion.mp3")
 
+                    # Play the audio file
+                    pygame.mixer.music.play()
 
+                    # Wait until playback is finished
+                    while pygame.mixer.music.get_busy():
+                        continue
 
+                    """
                     # Construct the command to play the audio file
                     play_command = f"aplay /home/catedra/Desktop/chocobot/chocobot/audios/empezar_conversacion.wav"
 
                     # Execute the command to play the audio file
-                    subprocess.run(play_command, shell=True)
+                    subprocess.run(play_command, shell=True)"""
 
                     #TTS.f_say_text("¿Quieres comenzar una conversación?")
+
+
 
                     vosk_socket.send_number_words_arduino(-1)
 
@@ -148,10 +161,21 @@ def f_recognize_names():
                 #TTS.f_say_text("¿Deseas guardar tu nombre?")
 
                 # Construct the command to play the audio file
+
+                pygame.mixer.music.load("/home/catedra/Desktop/chocobot/chocobot/audios/guardar_nombre.mp3")
+
+                # Play the audio file
+                pygame.mixer.music.play()
+
+                # Wait until playback is finished
+                while pygame.mixer.music.get_busy():
+                    continue
+
+                """
                 play_command = f"aplay /home/catedra/Desktop/chocobot/chocobot/audios/guardar_nombre.wav"
 
                 # Execute the command to play the audio file
-                subprocess.run(play_command, shell=True)
+                subprocess.run(play_command, shell=True)"""
 
                 vosk_socket.send_number_words_arduino(-1)
 
@@ -404,8 +428,34 @@ def f_say_hi():
 
     print(text)
 
+    tts = gTTS(text=text, lang='es-us')
+
+    directory = '/home/catedra/Desktop/chocobot/chocobot/audios/'
+    file_count = len(os.listdir(directory))
+
+    # Generate the output file name
+    output_file = os.path.join(directory, f'welcome_{file_count}.mp3')
+
+    
+    # Save the audio file
+    tts.save(output_file)
+
+    # Load the audio file
+    pygame.mixer.music.load(output_file)
+
+    vosk_socket.send_number_words_arduino(2)
+
+    # Play the audio file
+    pygame.mixer.music.play()
+
+    # Wait until playback is finished
+    while pygame.mixer.music.get_busy():
+        continue
+
+
     #TTS.f_say_text(data_received)
 
+"""
     directory = '/home/catedra/Desktop/chocobot/chocobot/audios/'
     file_count = len(os.listdir(directory))
 
@@ -424,7 +474,7 @@ def f_say_hi():
     play_command = f"aplay {output_file}"
 
     # Execute the command to play the audio file
-    subprocess.run(play_command, shell=True)
+    subprocess.run(play_command, shell=True)"""
 
 
 def f_save_name_id():

@@ -167,9 +167,22 @@ def f_speech_recognition():
                 print('Received from server: ' + data_received)  # show in terminal
 
             else:
+
                 client_socket.send(respuesta.encode())
-                
-                TTS.f_say_text("Hasta luego. Espero verte pronto.")
+
+                #TTS.f_say_text("Hasta luego. Espero verte pronto.")
+
+                pygame.mixer.music.load("/home/catedra/Desktop/chocobot/chocobot/audios/hasta_luego.mp3")
+
+                send_number_words_arduino(np.ceil(len(data_received.split())/2))
+
+                # Play the audio file
+                pygame.mixer.music.play()
+
+                # Wait until playback is finished
+                while pygame.mixer.music.get_busy():
+                    continue
+
                 send_number_words_arduino(-2)
                 flag_loop = False
                 #client_socket.close()
