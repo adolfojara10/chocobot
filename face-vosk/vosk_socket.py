@@ -2,13 +2,15 @@ import vosk
 import pyaudio
 import json
 import socket
-import TTS
+#import TTS
 import serial
-import subprocess
+#import subprocess
 import numpy as np
 import os
 from gtts import gTTS
-import pygame
+#import pygame
+from pydub import AudioSegment
+from pydub.playback import play
 
 
 global lista_despedida, model ,recognizer, p, stream, serial_connection
@@ -69,7 +71,7 @@ def f_speech_recognition():
     empty_recognitions = 0
     is_answer = False
 
-    pygame.init()
+    #pygame.init()
 
     #client_socket.send(message.encode())  # send message
     #data = client_socket.recv(1024).decode()
@@ -106,7 +108,9 @@ def f_speech_recognition():
                 client_socket.send(respuesta.encode())  # send message
                 data_received = client_socket.recv(4096).decode()  # receive response
 
+                #data_received = "hola como estas"
 
+                
 
                 
 
@@ -123,6 +127,14 @@ def f_speech_recognition():
                 # Save the audio file
                 tts.save(output_file)
 
+                audio = AudioSegment.from_file(output_file)
+                send_number_words_arduino(np.ceil(len(data_received.split())/2))
+                play(audio)
+
+                
+
+                """
+
                 # Load the audio file
                 pygame.mixer.music.load(output_file)
 
@@ -133,7 +145,7 @@ def f_speech_recognition():
 
                 # Wait until playback is finished
                 while pygame.mixer.music.get_busy():
-                    continue
+                    continue"""
 
 
 
@@ -172,7 +184,13 @@ def f_speech_recognition():
 
                 #TTS.f_say_text("Hasta luego. Espero verte pronto.")
 
-                pygame.mixer.music.load("/home/catedra/Desktop/chocobot/chocobot/audios/hasta_luego.mp3")
+                audio = AudioSegment.from_file("/home/catedra/Desktop/chocobot/chocobot/audios-estaticos/hasta_luego.mp3")
+                send_number_words_arduino(3)
+                play(audio)
+
+                """
+
+                pygame.mixer.music.load("/home/catedra/Desktop/chocobot/chocobot/audios-estaticos/hasta_luego.mp3")
 
                 send_number_words_arduino(np.ceil(len(data_received.split())/2))
 
@@ -181,7 +199,7 @@ def f_speech_recognition():
 
                 # Wait until playback is finished
                 while pygame.mixer.music.get_busy():
-                    continue
+                    continue"""
 
                 send_number_words_arduino(-2)
                 flag_loop = False
