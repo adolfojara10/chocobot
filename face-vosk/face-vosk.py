@@ -163,7 +163,7 @@ def f_recognize_names():
 
 
             #should call to save the new person and ask the name
-            elif name_person == "" and list_check_person.count(0)==30 and answer_create_user=="no":
+            elif name_person == "" and list_check_person.count(0)==20 and answer_create_user=="no":
                 list_check_person = []
                 # thread2 = threading.Thread(target= TTS.f_say_text("¿Deseas guardar tu nombre?"))
                 # thread2.start()
@@ -389,7 +389,16 @@ def f_start():
 
         if face_locations != []:
             face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=3, model="large")
-            f_recognize_names()
+            #print(-*25, "face encodings: ", len(face_encodings), -*25)
+            if len(face_encodings) == 1:
+                f_recognize_names()
+                f_draw_faces()
+            else:
+                audio = AudioSegment.from_file("/home/catedra/Desktop/chocobot/chocobot/audios-estaticos/2_personas.mp3")
+                vosk_socket.send_number_words_arduino(4)
+                vosk_socket.send_number_words_arduino(0)
+                play(audio)
+
             
         else:
             face_encodings = []
@@ -401,7 +410,7 @@ def f_start():
             
 
 
-        f_draw_faces()
+        #f_draw_faces()
 
         key = cv2.waitKey(1) & 0xFF
 
@@ -413,7 +422,7 @@ def f_start():
             break
 
         """
-        elif key == ord('s'): # and not "Unknown" in face_names:sudo pip3 install -U jetson-stats
+        elif key == ord('s'): # and not "Unknown" in face_names:
             #nombre = input("Escribe tu nombre")
             print("guardando nombre")
 
