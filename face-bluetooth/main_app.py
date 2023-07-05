@@ -1,24 +1,25 @@
-from serial_reader import serial_reader
+import serial_reader
 import face_recognition_functions
 import threading
 import cv2
 
-global received_data
+#global received_data
 
 
 if __name__ == "__main__":
+    serial_reader.f_start_vars()
     face_recognition_functions.f_load_saved_faces()
     face_recognition_functions.f_reset_variables()
     
-    received_data = "leer_persona"
+    #received_data = ""
     #received_data = "13 Adolfo Jara"
 
 
     # Create a thread for serial communication
-    #serial_thread = threading.Thread(target=serial_reader)
+    serial_thread = threading.Thread(target=serial_reader.serial_reader)
 
     # Start the serial communication thread
-    #serial_thread.start()
+    serial_thread.start()
 
     video_capture = cv2.VideoCapture(0, cv2.CAP_V4L2)
     video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
@@ -34,11 +35,12 @@ if __name__ == "__main__":
             break
         
 
-        if received_data == "leer_persona":
+        if serial_reader.received_data == "leer_persona":
             print("1")
             face_recognition_functions.f_read_person(frame)
             if face_recognition_functions.name_person != "Unknown" and face_recognition_functions.name_person != "":
-                received_data = ""
+                serial_reader.f_send_data("2")
+                serial_reader.received_data = ""
 
                 # enviar el id a la tablet
 
@@ -47,13 +49,13 @@ if __name__ == "__main__":
 
 
                 
-        elif " " in received_data:
+        elif " " in serial_reader.received_data:
             #crear persona
 
-            face_recognition_functions.f_create_student(frame, received_data)
+            face_recognition_functions.f_create_student(frame, serial_reader.received_data)
 
             if face_recognition_functions.is_user_saved:
-                received_data = ""
+                serial_reader.received_data = ""
 
                 # enviar que el estudiante se ha guardado exitosamente
 
