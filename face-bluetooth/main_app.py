@@ -157,6 +157,17 @@ if __name__ == "__main__":
 
             elif serial_reader.received_data.split("_")[-1] == "dificil":
                 movenet.f_easy(frame)
+
+        elif "good" in serial_reader.received_data:
+            #reproducir reinforcement sound
+            print(serial_reader.received_data)
+            serial_reader.received_data = ""
+
+        elif "bad" in serial_reader.received_data:
+            #reproducir reinforcement sound
+            print(serial_reader.received_data)
+            serial_reader.received_data = ""
+            
         
         else:
             pass
