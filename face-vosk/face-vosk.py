@@ -237,6 +237,7 @@ def f_recognize_names():
 
             if len(list_check_person)==50:
                 list_check_person = []
+                
 
 
 
@@ -419,6 +420,7 @@ def f_start():
                 # Release handle to the webcam
             video_capture.release()
             cv2.destroyAllWindows()
+            delete_files()
             break
 
         """
@@ -606,6 +608,21 @@ def f_call_window_new_face():
             f_save_name_id()
             """
 
+
+def delete_files():
+
+    #delete all the audio files created in the session
+    directory = "/home/catedra/Desktop/chocobot/chocobot/audios/"
+    
+    # Get a list of all files in the directory
+    file_list = os.listdir(directory)
+
+    # Iterate over the files and delete them
+    for file_name in file_list:
+        file_path = os.path.join(directory, file_name)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+            print(f"Deleted file: {file_path}")
 
 
 if __name__ == "__main__":

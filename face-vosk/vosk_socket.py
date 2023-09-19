@@ -31,7 +31,7 @@ def f_start_model():
 
 
 
-    serial_connection = serial.Serial(serial_port, baud_rate)
+    #serial_connection = serial.Serial(serial_port, baud_rate)
 
     
 
@@ -48,7 +48,7 @@ def send_number_words_arduino(number_words):
 
     value_bytes = str(number_words).encode()
 
-    serial_connection.write(value_bytes)  
+    #serial_connection.write(value_bytes)  
 
 
 
@@ -59,7 +59,7 @@ def f_speech_recognition():
     p = pyaudio.PyAudio()
 
     #host = "172.16.219.242"
-    host = "192.168.93.209"
+    host = "192.168.194.209"
     port = 5005  # socket server port number
 
     client_socket = socket.socket()  # instantiate
@@ -75,7 +75,7 @@ def f_speech_recognition():
 
     #client_socket.send(message.encode())  # send message
     #data = client_socket.recv(1024).decode()
-    print("------------habla-----------------")
+    print("------------habla vosk socket-----------------")
     send_number_words_arduino(-1)
     respuesta = ""
     flag_loop = True
@@ -123,7 +123,7 @@ def f_speech_recognition():
                 tts.save(output_file)
 
                 audio = AudioSegment.from_file(output_file)
-                send_number_words_arduino(np.ceil(len(data_received.split())/2))
+                send_number_words_arduino(np.ceil(len(data_received.split())/2) - 1)
                 play(audio)
 
 
