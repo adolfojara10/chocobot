@@ -11,6 +11,7 @@ if __name__ == "__main__":
     face_recognition_functions.f_reset_variables()
     
     received_data = "leer_persona"
+    #received_data = "13 Adolfo Jara"
 
 
     # Create a thread for serial communication
@@ -29,7 +30,7 @@ if __name__ == "__main__":
         ret, frame = video_capture.read()
 
         if not ret:
-            print("no sirve")
+            print("no sirve camara")
             break
         
 
@@ -38,14 +39,28 @@ if __name__ == "__main__":
             face_recognition_functions.f_read_person(frame)
             if face_recognition_functions.name_person != "Unknown" and face_recognition_functions.name_person != "":
                 received_data = ""
+
                 # enviar el id a la tablet
+
+                face_recognition_functions.f_reset_variables()
 
 
 
                 
         elif " " in received_data:
             #crear persona
-            pass
+
+            face_recognition_functions.f_create_student(frame, received_data)
+
+            if face_recognition_functions.is_user_saved:
+                received_data = ""
+
+                # enviar que el estudiante se ha guardado exitosamente
+
+
+
+                face_recognition_functions.f_reset_variables()
+
         else:
             pass
 

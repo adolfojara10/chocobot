@@ -15,7 +15,9 @@ global face_names
 global frame
 global rgb_small_frame
 global name_person
+global new_face_encodings
 global list_check_person
+global is_user_saved
 
 def f_reset_variables():
     global face_locations
@@ -23,12 +25,14 @@ def f_reset_variables():
     global face_names
     global name_person
     global list_check_person
+    global is_user_saved
 
     face_locations = []
     face_encodings = []
     face_names = []
     name_person = ""
     list_check_person = []
+    is_user_saved = False
 
 
 
@@ -173,37 +177,67 @@ def f_draw_faces():
         cv2.putText(frame, str(name), (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
 
-def f_save_name(new_face_encoding):
+def f_prove_existance(prove_face_encoding):
+    global known_face_encodings
+
+    matches = face_recognition.compare_faces(known_face_encodings, prove_face_encoding)
+
+    if True in matches:
+        return True
+    else:
+        return False
+    
+
+def f_save_name_id(name_student):
 
     global known_face_encodings
     global known_face_names
-    
+    global known_face_ids
+    global new_face_encodings
+    global is_user_saved
 
-    #new_face = new_face_encoding.tolist()
-    #new_face.append(str(len(known_face_names)+1))
-    #print("new face: \n", new_face)
-    new_face_array = np.array(new_face_encoding)
+    #words = name_student.split()
+
+    id_received = name_student.split()[0]
+
+    # Capitalize the first letter of each word and join them back into a single string
+    formatted_name = " ".join(word.capitalize() for word in name_student.split()[1:])
+
+    print(formatted_name)
+
+    new_face_array = np.array(new_face_encodings)
     new_face_array = new_face_array.reshape(1,-1)
-    #print(new_face_array)
+    print(new_face_array)
+
 
     known_face_encodings.append(new_face_array.flatten().tolist())
-    #face_encodings.append(str(len(known_face_names)))
-    #print("aqui face: ", "\n", new_face_encoding.tolist())
-    known_face_names.append(str(len(known_face_names)+1))
+    #known_face_ids.append(str(len(known_face_names)+1))
+    known_face_ids.append(id_received)
+    known_face_names.append(formatted_name)
+    
+    #known_face_names.append(str(len(known_face_names)+1))
 
     new_data = pd.DataFrame(new_face_array)
-    new_data["Nombre"] = str(len(known_face_names))
-    #print("nuevos: \n",new_data)
+    new_data["ID"] = id_received
+    new_data["Nombre"] = formatted_name
 
     try:
 
         #print(known_face_encodings)
         da = pd.DataFrame(known_face_encodings)
+        #nombre = input("¿Cual es tu nombre?")
+        da["ID"] = known_face_ids
         da["Nombre"] = known_face_names
 
         #print("otra forma: \n", da)
 
-        da.to_csv("./data/caras.csv", index = False)
+        print(da)
+
+        da.to_csv("/home/catedra/Desktop/chocobot/chocobot/face-vosk/data/caras.csv", index = False)
+
+        print("usuario guardado")
+
+        is_user_saved = True
 
         """all_data = pd.read_csv("./data/caras.csv")
         print("antiguo \n",all_data)
@@ -218,19 +252,12 @@ def f_save_name(new_face_encoding):
         #print(all_data["Nombre"])
         df3.to_csv("./data/caras.csv", index = False, mode='w')#, header=False)"""
     except:
-        print("exception")
+        print("exception---------------------")
         new_data.to_csv("./data/caras.csv", index = False)#, header=False)
 
+        is_user_saved = True
 
-def f_prove_existance(prove_face_encoding):
-    global known_face_encodings
 
-    matches = face_recognition.compare_faces(known_face_encodings, prove_face_encoding)
-
-    if True in matches:
-        return True
-    else:
-        return False
 
 
 def f_read_person(frame_received):
@@ -273,13 +300,59 @@ def f_read_person(frame_received):
         face_encodings = []
         list_check_person.append(-1)
 
-        if list_check_person.count(-1)==30:
-            name_person = ""
+        #if list_check_person.count(-1)==30:
+            #name_person = ""
+
+    
+    if len(list_check_person) == 50:
+        list_check_person = []
 
         
 
 
     
+def f_create_student(frame_received, name_student):
+    global frame, face_locations, face_encodings, rgb_small_frame, new_face_encodings, list_check_person
+
+    frame = frame_received
+
+    frame = cv2.flip(frame, 1)
+
+    #if process_this_frame:
+    # Resize frame of video to 1/4 size for faster face recognition processing
+    small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+
+    # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
+    rgb_small_frame = small_frame[:, :, ::-1]
+    
+    # Find all the faces and face encodings in the current frame of video
+    face_locations = face_recognition.face_locations(rgb_small_frame, model="cnn", number_of_times_to_upsample=2)
+
+    if face_locations != []:
+        face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=3, model="large")
+        #print(-*25, "face encodings: ", len(face_encodings), -*25)
+        #print("face location != [] len face encodings: ", len(face_encodings))
+        if len(face_encodings) == 1:
+            list_check_person.append(1)
+
+            if list_check_person.count(1) == 20:
+                print("creando")
+                new_face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=5, model="large")[0]
+
+                f_save_name_id(name_student=name_student)
+
+            
+        else:
+            list_check_person.append(0)
+            print("2+ personas")
+            """
+            audio = AudioSegment.from_file("/home/catedra/Desktop/chocobot/chocobot/audios-estaticos/2_personas.mp3")
+            vosk_socket.send_number_words_arduino(4)
+            vosk_socket.send_number_words_arduino(0)
+            play(audio)"""
+
+    if len(list_check_person) == 50:
+        list_check_person = []
 
 
 
