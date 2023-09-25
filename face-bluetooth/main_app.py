@@ -12,7 +12,7 @@ if __name__ == "__main__":
     face_recognition_functions.f_reset_variables()
     
     #received_data = ""
-    #received_data = "13 Adolfo Jara"
+    received_data = "13 Adolfo Jara"
 
 
     # Create a thread for serial communication
@@ -33,12 +33,33 @@ if __name__ == "__main__":
         if not ret:
             print("no sirve camara")
             break
-        
 
+        """
+        if " " in received_data:
+            print("2")
+            #crear persona
+
+            face_recognition_functions.f_create_student(frame, received_data)
+
+            if face_recognition_functions.is_user_saved == 1:
+                print("usuario guardado")
+                serial_reader.received_data = ""
+
+                serial_reader.f_send_data("1")
+
+                face_recognition_functions.f_reset_variables()
+            elif face_recognition_functions.is_user_saved == -1:
+                serial_reader.f_send_data("-1")
+                print("usuario ya existe")"""
+
+        
+        
         if serial_reader.received_data == "leer_persona":
             print("1")
             face_recognition_functions.f_read_person(frame)
-            if face_recognition_functions.name_person != "Unknown" and face_recognition_functions.name_person != "":
+            #if face_recognition_functions.name_person != "Unknown" and face_recognition_functions.name_person != "":
+            if face_recognition_functions.is_user_recognized == 1:
+                #arreglar para que sea el id de la persona
                 serial_reader.f_send_data("2")
                 serial_reader.received_data = ""
 
@@ -46,25 +67,45 @@ if __name__ == "__main__":
 
                 face_recognition_functions.f_reset_variables()
 
+            elif face_recognition_functions.is_user_recognized == -1:
+                print("No hay persona")
+                serial_reader.received_data = ""
+                face_recognition_functions.f_reset_variables()
+
+                serial_reader.f_send_data("-1")
+
+                # enviar que la persona no existe y crear el canvas en la tablet
+
+
 
 
                 
         elif " " in serial_reader.received_data:
+            print("2")
             #crear persona
 
             face_recognition_functions.f_create_student(frame, serial_reader.received_data)
 
-            if face_recognition_functions.is_user_saved:
+            if face_recognition_functions.is_user_saved == 1:
+                print("usuario guardado")
                 serial_reader.received_data = ""
 
-                # enviar que el estudiante se ha guardado exitosamente
-
-
+                serial_reader.f_send_data("1")
 
                 face_recognition_functions.f_reset_variables()
+                
+
+            elif face_recognition_functions.is_user_saved == -1:
+                serial_reader.received_data = ""
+                serial_reader.f_send_data("-1")
+                print("usuario ya existe")
+                
+                face_recognition_functions.f_reset_variables()
+                # reproducir sonido que el usuario ya existe
 
         else:
             pass
+        
 
         key = cv2.waitKey(1) & 0xFF
 

@@ -18,6 +18,7 @@ global name_person
 global new_face_encodings
 global list_check_person
 global is_user_saved
+global is_user_recognized
 
 def f_reset_variables():
     global face_locations
@@ -26,13 +27,15 @@ def f_reset_variables():
     global name_person
     global list_check_person
     global is_user_saved
+    global is_user_recognized
 
     face_locations = []
     face_encodings = []
     face_names = []
     name_person = ""
     list_check_person = []
-    is_user_saved = False
+    is_user_saved = 0
+    is_user_recognized = 0
 
 
 
@@ -60,6 +63,7 @@ def f_recognize_names():
     global known_face_encodings
     global name_person
     global list_check_person
+    global is_user_recognized
 
 
     face_names = []
@@ -95,6 +99,7 @@ def f_recognize_names():
 
                 if name_person == "" and name != "Unknown" and list_check_person.count(1)==17:
                     name_person = name
+                    is_user_recognized = 1
                     print("persona reconocida")
                     # thread1 = threading.Thread(target= f_say_hi)
                     # thread1.start()
@@ -112,6 +117,7 @@ def f_recognize_names():
 
             #should call to save the new person and ask the name
             elif name_person == "" and list_check_person.count(0)==20:
+                is_user_recognized = -1
                 list_check_person = []
                 print("no hay persona")
                 # thread2 = threading.Thread(target= TTS.f_say_text("¿Deseas guardar tu nombre?"))
@@ -134,6 +140,7 @@ def f_recognize_names():
             elif name == "Unknown":
                 list_check_person.append(0)
                 #print(len(list_check_person))
+
 
             if len(list_check_person)==50:
                 list_check_person = []
@@ -177,12 +184,14 @@ def f_draw_faces():
         cv2.putText(frame, str(name), (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
 
-def f_prove_existance(prove_face_encoding):
-    global known_face_encodings
+def f_prove_existance(prove_face_encoding, new_name):
+    global known_face_encodings, known_face_names
 
     matches = face_recognition.compare_faces(known_face_encodings, prove_face_encoding)
+    
+    formatted_name = " ".join(word.capitalize() for word in new_name.split()[1:])
 
-    if True in matches:
+    if True in matches and formatted_name in known_face_names:
         return True
     else:
         return False
@@ -237,7 +246,7 @@ def f_save_name_id(name_student):
 
         print("usuario guardado")
 
-        is_user_saved = True
+        is_user_saved = 1
 
         """all_data = pd.read_csv("./data/caras.csv")
         print("antiguo \n",all_data)
@@ -255,7 +264,7 @@ def f_save_name_id(name_student):
         print("exception---------------------")
         new_data.to_csv("./data/caras.csv", index = False)#, header=False)
 
-        is_user_saved = True
+        is_user_saved = 1
 
 
 
@@ -312,7 +321,7 @@ def f_read_person(frame_received):
 
     
 def f_create_student(frame_received, name_student):
-    global frame, face_locations, face_encodings, rgb_small_frame, new_face_encodings, list_check_person
+    global frame, face_locations, face_encodings, rgb_small_frame, new_face_encodings, list_check_person, is_user_saved
 
     frame = frame_received
 
@@ -339,7 +348,11 @@ def f_create_student(frame_received, name_student):
                 print("creando")
                 new_face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=5, model="large")[0]
 
-                f_save_name_id(name_student=name_student)
+                if not f_prove_existance(new_face_encodings, name_student):
+                    f_save_name_id(name_student=name_student)
+                else:
+                    is_user_saved = -1
+
 
             
         else:
