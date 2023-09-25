@@ -18,7 +18,7 @@ class ReadLine:
         i = self.buf.find(b"\n")
         if i >= 0:
             r = self.buf[:i+1]
-            self.buf = selserf.buf[i+1:]
+            self.buf = self.buf[i+1:]
             return r.decode('utf-8').strip()  # Decode and strip whitespace
         while True:
             i = max(1, min(2048, self.s.in_waiting))

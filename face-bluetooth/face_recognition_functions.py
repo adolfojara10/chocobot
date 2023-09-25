@@ -206,8 +206,9 @@ def f_save_name_id(name_student):
     global is_user_saved
 
     #words = name_student.split()
-
+    print(name_student)
     id_received = name_student.split()[0]
+    
 
     # Capitalize the first letter of each word and join them back into a single string
     formatted_name = " ".join(word.capitalize() for word in name_student.split()[1:])
