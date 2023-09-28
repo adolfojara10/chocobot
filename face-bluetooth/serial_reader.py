@@ -32,7 +32,7 @@ class ReadLine:
             else:
                 self.buf.extend(data)
 
-                
+
 def serial_reader():
     global received_data, ser
     max_retries = 3  # Maximum number of retry attempts
