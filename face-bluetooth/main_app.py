@@ -2,12 +2,14 @@ import serial_reader
 import face_recognition_functions
 import threading
 import cv2
+import simon_dice
 
 #global received_data
 
 
 if __name__ == "__main__":
     serial_reader.f_start_vars()
+    simon_dice.f_reset_vars()
     face_recognition_functions.f_load_saved_faces()
     face_recognition_functions.f_reset_variables()
     
@@ -103,9 +105,19 @@ if __name__ == "__main__":
                 face_recognition_functions.f_reset_variables()
                 # reproducir sonido que el usuario ya existe
 
+        elif "simon_dice" in serial_reader.received_data:
+
+            if serial_reader.received_data.split("_")[-1] == "facil":
+                simon_dice.f_easy(frame)
+
+            elif serial_reader.received_data.split("_")[-1] == "medio":
+                simon_dice.f_easy(frame)
+
+            elif serial_reader.received_data.split("_")[-1] == "dificil":
+                simon_dice.f_easy(frame)
+        
         else:
             pass
-        
 
         key = cv2.waitKey(1) & 0xFF
 

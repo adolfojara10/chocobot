@@ -1,5 +1,6 @@
 import serial
 import threading
+import time
 
 global received_data, ser
 
@@ -31,21 +32,36 @@ class ReadLine:
             else:
                 self.buf.extend(data)
 
+                
 def serial_reader():
     global received_data, ser
+    max_retries = 3  # Maximum number of retry attempts
+    
+    while max_retries > 0:
+        try:
+            ser = serial.Serial('/dev/ttyTHS1', 9600)
+            rl = ReadLine(ser)
+            #ser.timeout = 1
 
-    ser = serial.Serial('/dev/ttyTHS1', 9600)
-    rl = ReadLine(ser)
-    #ser.timeout = 1
+            print("hola")
 
-    print("hola")
-
-    while True:
-        data = rl.readline()
-        if data != "":
-            received_data = data
-            print(data)
-
+            while True:
+                data = rl.readline()
+                if data != "":
+                    received_data = data
+                    print(data)
+        except serial.SerialException as e:
+            print("SerialException:", str(e))
+            # Handle the exception as needed, e.g., log the error or other actions.
+            max_retries -= 1  # Decrement the number of remaining retries
+            if max_retries <= 0:
+                print("Maximum retry attempts reached. Exiting.")
+                break
+            else:
+                print(f"Retrying ({max_retries} retries remaining)...")
+                time.sleep(1)  # Wait before attempting to reopen the serial port
+        finally:
+            ser.close()  # Close the serial port when done
 
 def f_send_data(data_send):
     global ser
