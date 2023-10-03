@@ -14,7 +14,7 @@ if __name__ == "__main__":
     face_recognition_functions.f_reset_variables()
     
     #received_data = ""
-    received_data = "13 Adolfo Jara"
+    #received_data = "13 Adolfo Jara"
 
 
     # Create a thread for serial communication
