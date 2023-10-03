@@ -2,11 +2,11 @@ import cv2
 import tensorflow as tf
 import numpy as np
 import time
-
+from serial_reader import f_send_data
 
 global EDGES
-global step, is_command_sounded, left_foot, right_foot, i_clap, is_game_finished, right_hand
-
+global step, is_command_sounded, left_foot, right_foot, i_clap, is_game_finished, right_hand,interpreter
+interpreter = None
 
 EDGES = {
     (0, 1): 'm',
@@ -76,6 +76,7 @@ def f_easy(frame_received, confidence_threshold=0.4):
     #step = 3
 
     keypoints = f_read(frame_received)
+    draw_keypoints(frame_received, keypoints, 0.4)
     
 
     if step == 0:
@@ -83,13 +84,16 @@ def f_easy(frame_received, confidence_threshold=0.4):
             #reproducir sonido
             is_command_sounded = True
 
+        print("0")
+
         if (keypoints[9][0] < keypoints[0][0] and keypoints[10][0] < keypoints[0][0] and keypoints[9][2] > confidence_threshold and keypoints[0][2] > confidence_threshold and keypoints[10][2] > confidence_threshold):
             print("yessss")
             step+=1
             is_command_sounded = False
 
     elif step == 1:
-
+        
+        print("1")
         if not is_command_sounded:
             #reproducir sonido
             is_command_sounded = True
@@ -149,6 +153,7 @@ def f_easy(frame_received, confidence_threshold=0.4):
             is_command_sounded = False
             f_reset_vars()
             ##### terminar el juego: enviar señal a la tablet que el juegop ya se acabo y cambiar la variable que recibe la señal de la tablet a ""
+            f_send_data("completado")
 
 
         
@@ -248,6 +253,7 @@ def f_medium(frame_received, confidence_threshold=0.4):
                 step += 1
                 f_reset_vars()
                 ##### terminar el juego: enviar señal a la tablet que el juegop ya se acabo y cambiar la variable que recibe la señal de la tablet a ""
+                f_send_data("completado")
                                 
         except:
             pass
@@ -257,7 +263,7 @@ def f_medium(frame_received, confidence_threshold=0.4):
 
 
             
-def f_hard(frame_received, confidence_threshold):
+def f_hard(frame_received, confidence_threshold=0.4):
     global step, is_command_sounded, right_hand
 
     #step = 2
@@ -319,6 +325,7 @@ def f_hard(frame_received, confidence_threshold):
             is_command_sounded = False
             f_reset_vars()
             ##### terminar el juego: enviar señal a la tablet que el juegop ya se acabo y cambiar la variable que recibe la señal de la tablet a ""
+            f_send_data("completado")
 
 
 

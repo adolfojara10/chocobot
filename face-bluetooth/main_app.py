@@ -3,6 +3,7 @@ import face_recognition_functions
 import threading
 import cv2
 import simon_dice
+import movenet
 
 #global received_data
 
@@ -12,9 +13,12 @@ if __name__ == "__main__":
     simon_dice.f_reset_vars()
     face_recognition_functions.f_load_saved_faces()
     face_recognition_functions.f_reset_variables()
+    movenet.f_load_model()
+    movenet.f_reset_vars()
     
     #received_data = ""
     #received_data = "13 Adolfo Jara"
+    #received_data = "conciencia_corporal_facil"
 
 
     # Create a thread for serial communication
@@ -53,6 +57,22 @@ if __name__ == "__main__":
             elif face_recognition_functions.is_user_saved == -1:
                 serial_reader.f_send_data("-1")
                 print("usuario ya existe")"""
+        
+        """if "conciencia_corporal" in received_data:
+
+            if movenet.interpreter is None:
+                movenet.f_load_model()
+                movenet.f_reset_vars()
+
+            if received_data.split("_")[-1] == "facil":
+                #print("hhhhhh")
+                movenet.f_easy(frame)
+
+            elif received_data.split("_")[-1] == "medio":
+                movenet.f_easy(frame)
+
+            elif received_data.split("_")[-1] == "dificil":
+                movenet.f_easy(frame)"""
 
         
         
@@ -115,6 +135,17 @@ if __name__ == "__main__":
 
             elif serial_reader.received_data.split("_")[-1] == "dificil":
                 simon_dice.f_easy(frame)
+
+        elif "conciencia_corporal" in serial_reader.received_data:
+
+            if serial_reader.received_data.split("_")[-1] == "facil":
+                movenet.f_easy(frame)
+
+            elif serial_reader.received_data.split("_")[-1] == "medio":
+                movenet.f_easy(frame)
+
+            elif serial_reader.received_data.split("_")[-1] == "dificil":
+                movenet.f_easy(frame)
         
         else:
             pass
