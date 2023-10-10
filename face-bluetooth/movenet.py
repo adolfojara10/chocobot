@@ -212,8 +212,8 @@ def f_medium(frame_received, confidence_threshold=0.4):
             #reproducir sonido
             is_command_sounded = True
 
-        if (keypoints[0][2] >= confidence_threshold and keypoints[10][2] >= confidence_threshold):
-            print(abs(keypoints[0][1] - keypoints[10][1]), "****************** ", abs(keypoints[0][0] - keypoints[10][0]))
+        #if (keypoints[0][2] >= confidence_threshold and keypoints[10][2] >= confidence_threshold):
+        #    print(abs(keypoints[0][1] - keypoints[10][1]), "****************** ", abs(keypoints[0][0] - keypoints[10][0]))
 
         if (abs(keypoints[0][1] - keypoints[10][1]) < 71 and abs(keypoints[0][0] - keypoints[10][0]) < 82) and (keypoints[0][2] >= confidence_threshold and keypoints[10][2] >= confidence_threshold):
             print("yesss222")
@@ -238,8 +238,8 @@ def f_medium(frame_received, confidence_threshold=0.4):
 
         try:
             #print(left_foot[0] - keypoints[15][0], "    ---------------------------      ", right_foot[0] - keypoints[16][0])
-            if keypoints[15][2] > confidence_threshold:
-                print(abs(left_foot[0] - keypoints[15][0]))
+            #if keypoints[15][2] > confidence_threshold:
+            #    print(abs(left_foot[0] - keypoints[15][0]))
 
             if (abs(left_foot[0] - keypoints[15][0]) > 15 or right_foot[0] - keypoints[16][0] > 15) and (keypoints[15][2] > confidence_threshold and keypoints[16][2] > confidence_threshold) and i_clap<2:
                 print("yesssss3333")
@@ -316,7 +316,7 @@ def f_hard(frame_received, confidence_threshold=0.4):
             #reproducir sonido
             is_command_sounded = True
 
-        print(abs(keypoints[1][0] - keypoints[10][0]), " ******************* ", )
+        #print(abs(keypoints[1][0] - keypoints[10][0]), " ******************* ", )
 
         if ((abs(keypoints[1][0] - keypoints[10][0]) < 20 and abs(keypoints[1][1] - keypoints[10][1])) or (abs(keypoints[1][0] - keypoints[9][0]) < 20 and abs(keypoints[1][1] - keypoints[9][1])) <100) and (keypoints[1][2] > confidence_threshold and (keypoints[9][2] > confidence_threshold or keypoints[10][2] > confidence_threshold)):
             print("yessss33333333")

@@ -43,7 +43,7 @@ def serial_reader():
             rl = ReadLine(ser)
             #ser.timeout = 1
 
-            print("hola")
+            print("hola serial")
 
             while True:
                 data = rl.readline()

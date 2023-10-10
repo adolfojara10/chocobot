@@ -211,9 +211,9 @@ def f_save_name_id(name_student):
     
 
     # Capitalize the first letter of each word and join them back into a single string
-    formatted_name = " ".join(word.capitalize() for word in name_student.split()[1:])
+    #formatted_name = " ".join(word.capitalize() for word in name_student.split()[1:])
 
-    print(formatted_name)
+    print(name_student.split()[1])
 
     new_face_array = np.array(new_face_encodings)
     new_face_array = new_face_array.reshape(1,-1)
@@ -223,13 +223,13 @@ def f_save_name_id(name_student):
     known_face_encodings.append(new_face_array.flatten().tolist())
     #known_face_ids.append(str(len(known_face_names)+1))
     known_face_ids.append(id_received)
-    known_face_names.append(formatted_name)
+    known_face_names.append(name_student.split()[1])
     
     #known_face_names.append(str(len(known_face_names)+1))
 
     new_data = pd.DataFrame(new_face_array)
     new_data["ID"] = id_received
-    new_data["Nombre"] = formatted_name
+    new_data["Nombre"] = name_student.split()[1]
 
     try:
 
