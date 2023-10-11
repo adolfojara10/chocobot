@@ -19,6 +19,7 @@ global new_face_encodings
 global list_check_person
 global is_user_saved
 global is_user_recognized
+global id_person_recognized
 
 def f_reset_variables():
     global face_locations
@@ -28,6 +29,7 @@ def f_reset_variables():
     global list_check_person
     global is_user_saved
     global is_user_recognized
+    global id_person_recognized
 
     face_locations = []
     face_encodings = []
@@ -36,6 +38,7 @@ def f_reset_variables():
     list_check_person = []
     is_user_saved = 0
     is_user_recognized = 0
+    id_person_recognized = 0
 
 
 
@@ -64,6 +67,7 @@ def f_recognize_names():
     global name_person
     global list_check_person
     global is_user_recognized
+    global id_person_recognized
 
 
     face_names = []
@@ -89,7 +93,8 @@ def f_recognize_names():
 
             #recognizes the name of the person
             if matches[best_match_index]: #and best_match_index > 0.6:
-                name = known_face_names[best_match_index].split()[0]
+                #name = known_face_names[best_match_index].split()[0]
+                name = known_face_names[best_match_index]
                 list_check_person.append(1)
 
                 #greet the person
@@ -100,6 +105,7 @@ def f_recognize_names():
                 if name_person == "" and name != "Unknown" and list_check_person.count(1)==17:
                     name_person = name
                     is_user_recognized = 1
+                    id_person_recognized = known_face_ids[best_match_index]
                     print("persona reconocida")
                     # thread1 = threading.Thread(target= f_say_hi)
                     # thread1.start()

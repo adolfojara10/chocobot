@@ -1,19 +1,24 @@
 from pyzbar.pyzbar import decode
+import time
+import serial_reader
 
-global i, is_command_sounded
+global i, is_command_sounded, start_time, end_time
 
 def f_reset_vars():
-    global i, is_command_sounded
+    global i, is_command_sounded, start_time, end_time
     i = 0
+    start_time = 0
+    end_time = 0
     is_command_sounded = False
 
 def f_easy(frame_received):
-    global i, is_command_sounded
+    global i, is_command_sounded, start_time, end_time
 
     print(str(i))
 
     if i == 0:
         if not is_command_sounded:
+            start_time = time.time()
             f_reproduce_command_sound(1)
             is_command_sounded = True
 
@@ -76,8 +81,13 @@ def f_easy(frame_received):
         qr_code = f_read_qr(frame_received)
         if qr_code == "Uu":
             i+=1
+            end_time = time.time()
+            total_time = int(end_time - start_time)
+            send_sms = "1_" + str(total_time)
+            serial_reader.f_send_data(send_sms)
             f_reproduce_final_sound()
             f_reset_vars()
+            serial_reader.received_data = ""
         else:
             f_reproduce_reinforcement_sound()
             
@@ -90,12 +100,13 @@ def f_easy(frame_received):
 
 
 def f_medium(frame_received):
-    global i, is_command_sounded
+    global i, is_command_sounded, start_time, end_time
 
     print(str(i))
 
     if i == 0:
         if not is_command_sounded:
+            start_time = time.time()
             f_reproduce_command_sound(1)
             is_command_sounded = True
 
@@ -256,9 +267,14 @@ def f_medium(frame_received):
 
         qr_code = f_read_qr(frame_received)
         if qr_code == "Caracol":
+            end_time = time.time()
+            total_time = int(end_time - start_time)
+            send_sms = "1_" + total_time
+            serial_reader.f_send_data(send_sms)
             i+=1
             f_reproduce_final_sound()
             f_reset_vars()
+            serial_reader.received_data = ""
         else:
             f_reproduce_reinforcement_sound()
             
@@ -269,12 +285,13 @@ def f_medium(frame_received):
         pass
 
 def f_hard(frame_received):
-    global i, is_command_sounded
+    global i, is_command_sounded, start_time, end_time
 
     print(str(i))
 
     if i == 0:
         if not is_command_sounded:
+            start_time = time.time()
             f_reproduce_command_sound(1)
             is_command_sounded = True
 
@@ -409,8 +426,13 @@ def f_hard(frame_received):
         qr_code = f_read_qr(frame_received)
         if qr_code == "9":
             i+=1
+            end_time = time.time()
+            total_time = int(end_time - start_time)
+            send_sms = "1_" + total_time
+            serial_reader.f_send_data(send_sms)
             f_reproduce_final_sound()
             f_reset_vars()
+            serial_reader.received_data = ""
         else:
             f_reproduce_reinforcement_sound()
             

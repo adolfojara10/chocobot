@@ -82,7 +82,7 @@ if __name__ == "__main__":
             #if face_recognition_functions.name_person != "Unknown" and face_recognition_functions.name_person != "":
             if face_recognition_functions.is_user_recognized == 1:
                 #arreglar para que sea el id de la persona
-                serial_reader.f_send_data("2")
+                serial_reader.f_send_data(str(face_recognition_functions.id_person_recognized))
                 serial_reader.received_data = ""
 
                 # enviar el id a la tablet
@@ -137,6 +137,17 @@ if __name__ == "__main__":
                 simon_dice.f_easy(frame)
 
         elif "conciencia_corporal" in serial_reader.received_data:
+
+            if serial_reader.received_data.split("_")[-1] == "facil":
+                movenet.f_easy(frame)
+
+            elif serial_reader.received_data.split("_")[-1] == "medio":
+                movenet.f_easy(frame)
+
+            elif serial_reader.received_data.split("_")[-1] == "dificil":
+                movenet.f_easy(frame)
+
+        elif "yoga" in serial_reader.received_data:
 
             if serial_reader.received_data.split("_")[-1] == "facil":
                 movenet.f_easy(frame)
