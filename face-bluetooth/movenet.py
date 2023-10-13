@@ -3,6 +3,7 @@ import tensorflow as tf
 import numpy as np
 import time
 from serial_reader import f_send_data
+import reproduce_sound
 
 global EDGES
 global step, is_command_sounded, left_foot, right_foot, i_clap, is_game_finished, right_hand,interpreter
@@ -82,6 +83,8 @@ def f_easy(frame_received, confidence_threshold=0.4):
     if step == 0:
         if not is_command_sounded:
             #reproducir sonido
+            reproduce_sound.f_movenet()
+            reproduce_sound.f_easy_movenet(step)
             is_command_sounded = True
 
         print("0")
@@ -96,6 +99,7 @@ def f_easy(frame_received, confidence_threshold=0.4):
         print("1")
         if not is_command_sounded:
             #reproducir sonido
+            reproduce_sound.f_easy_movenet(step)
             is_command_sounded = True
 
         if (abs(keypoints[9][0] - keypoints[8][0]) < 10 and (keypoints[9][2] > (confidence_threshold - 0.1) and keypoints[8][2] > (confidence_threshold - 0.1))) or (abs(keypoints[10][0] - keypoints[7][0]) < 10 and (keypoints[10][2] > (confidence_threshold - 0.1) and keypoints[7][2] > (confidence_threshold - 0.1))):
@@ -107,6 +111,7 @@ def f_easy(frame_received, confidence_threshold=0.4):
         
         if not is_command_sounded:
             #reproducir sonido
+            reproduce_sound.f_easy_movenet(step)
             print("hola")
             left_foot = None
             is_command_sounded = True
@@ -140,6 +145,7 @@ def f_easy(frame_received, confidence_threshold=0.4):
     elif step == 3:
         if not is_command_sounded:
             #reproducir sonido
+            reproduce_sound.f_easy_movenet(step)
             is_command_sounded = True
 
         print(abs(keypoints[9][1] - keypoints[10][1]))
@@ -153,7 +159,7 @@ def f_easy(frame_received, confidence_threshold=0.4):
             is_command_sounded = False
             f_reset_vars()
             ##### terminar el juego: enviar señal a la tablet que el juegop ya se acabo y cambiar la variable que recibe la señal de la tablet a ""
-            f_send_data("completado")
+            f_send_data("1")
 
 
         
@@ -168,6 +174,8 @@ def f_medium(frame_received, confidence_threshold=0.4):
     if step == 0:
         if not is_command_sounded:
             #reproducir sonido
+            reproduce_sound.f_movenet()
+            reproduce_sound.f_med_movenet(step)
             print("hola")
             left_foot = None
             is_command_sounded = True
@@ -210,6 +218,7 @@ def f_medium(frame_received, confidence_threshold=0.4):
 
         if not is_command_sounded:
             #reproducir sonido
+            reproduce_sound.f_med_movenet(step)
             is_command_sounded = True
 
         #if (keypoints[0][2] >= confidence_threshold and keypoints[10][2] >= confidence_threshold):
@@ -224,6 +233,7 @@ def f_medium(frame_received, confidence_threshold=0.4):
         
         if not is_command_sounded:
             #reproducir sonido
+            reproduce_sound.f_med_movenet(step)
             is_command_sounded = True
 
         try:
@@ -274,6 +284,8 @@ def f_hard(frame_received, confidence_threshold=0.4):
 
         if not is_command_sounded:
             #reproducir sonido
+            reproduce_sound.f_movenet()
+            reproduce_sound.f_dif_movenet(step)
             is_command_sounded = True
 
 
@@ -304,6 +316,7 @@ def f_hard(frame_received, confidence_threshold=0.4):
     elif step == 1:
         if not is_command_sounded:
             #reproducir sonido
+            reproduce_sound.f_dif_movenet(step)
             is_command_sounded = True
 
         if ((abs(keypoints[14][0] - keypoints[9][0]) < 45 and abs(keypoints[14][1] - keypoints[9][1]) < 45) or (abs(keypoints[14][0] - keypoints[10][0]) < 30 and abs(keypoints[14][1] - keypoints[10][1]) < 30)) and (keypoints[14][2] > confidence_threshold and (keypoints[9][2] > confidence_threshold or keypoints[10][2] > confidence_threshold)):
@@ -314,6 +327,7 @@ def f_hard(frame_received, confidence_threshold=0.4):
     elif step == 2:
         if not is_command_sounded:
             #reproducir sonido
+            reproduce_sound.f_dif_movenet(step)
             is_command_sounded = True
 
         #print(abs(keypoints[1][0] - keypoints[10][0]), " ******************* ", )

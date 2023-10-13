@@ -1,6 +1,7 @@
 from pyzbar.pyzbar import decode
 import time
 import serial_reader
+import reproduce_sound
 
 global i, is_command_sounded, start_time, end_time
 
@@ -19,7 +20,9 @@ def f_easy(frame_received):
     if i == 0:
         if not is_command_sounded:
             start_time = time.time()
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_simon_dice()
+            reproduce_sound.f_easy_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -32,7 +35,8 @@ def f_easy(frame_received):
 
     elif i ==1:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_easy_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -46,7 +50,8 @@ def f_easy(frame_received):
 
     elif i ==2:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_easy_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -60,7 +65,8 @@ def f_easy(frame_received):
 
     elif i ==3:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_easy_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -75,7 +81,8 @@ def f_easy(frame_received):
 
     elif i ==4:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_easy_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -85,7 +92,7 @@ def f_easy(frame_received):
             total_time = int(end_time - start_time)
             send_sms = "1_" + str(total_time)
             serial_reader.f_send_data(send_sms)
-            f_reproduce_final_sound()
+            #f_reproduce_final_sound()
             f_reset_vars()
             serial_reader.received_data = ""
         else:
@@ -106,8 +113,11 @@ def f_medium(frame_received):
 
     if i == 0:
         if not is_command_sounded:
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_simon_dice()
+            reproduce_sound.f_med_simon(i)
             start_time = time.time()
-            f_reproduce_command_sound(1)
+            
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -120,7 +130,8 @@ def f_medium(frame_received):
 
     elif i ==1:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_med_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -134,7 +145,8 @@ def f_medium(frame_received):
 
     elif i ==2:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_med_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -148,7 +160,8 @@ def f_medium(frame_received):
 
     elif i ==3:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_med_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -162,7 +175,8 @@ def f_medium(frame_received):
 
     elif i ==4:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_med_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -176,7 +190,8 @@ def f_medium(frame_received):
 
     elif i ==5:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_med_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -191,7 +206,8 @@ def f_medium(frame_received):
 
     elif i ==6:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_med_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -206,7 +222,8 @@ def f_medium(frame_received):
 
     elif i ==7:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_med_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -220,7 +237,8 @@ def f_medium(frame_received):
 
     elif i ==8:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_med_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -234,7 +252,8 @@ def f_medium(frame_received):
 
     elif i == 9:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_med_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -248,7 +267,8 @@ def f_medium(frame_received):
 
     elif i == 10:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_med_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -262,7 +282,8 @@ def f_medium(frame_received):
 
     elif i ==11:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_med_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -272,7 +293,7 @@ def f_medium(frame_received):
             send_sms = "1_" + total_time
             serial_reader.f_send_data(send_sms)
             i+=1
-            f_reproduce_final_sound()
+            #f_reproduce_final_sound()
             f_reset_vars()
             serial_reader.received_data = ""
         else:
@@ -291,8 +312,11 @@ def f_hard(frame_received):
 
     if i == 0:
         if not is_command_sounded:
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_simon_dice()
+            reproduce_sound.f_dif_simon(i)
             start_time = time.time()
-            f_reproduce_command_sound(1)
+            
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -305,7 +329,8 @@ def f_hard(frame_received):
 
     elif i ==1:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_dif_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -319,7 +344,8 @@ def f_hard(frame_received):
 
     elif i ==2:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_dif_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -333,7 +359,8 @@ def f_hard(frame_received):
 
     elif i ==3:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_dif_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -347,7 +374,8 @@ def f_hard(frame_received):
 
     elif i ==4:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_dif_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -361,7 +389,8 @@ def f_hard(frame_received):
 
     elif i ==5:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_dif_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -376,7 +405,8 @@ def f_hard(frame_received):
 
     elif i ==6:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_dif_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -391,7 +421,8 @@ def f_hard(frame_received):
 
     elif i ==7:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_dif_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -405,7 +436,8 @@ def f_hard(frame_received):
 
     elif i ==8:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_dif_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -420,7 +452,8 @@ def f_hard(frame_received):
     
     elif i ==9:
         if not is_command_sounded:
-            f_reproduce_command_sound(1)
+            #f_reproduce_command_sound(1)
+            reproduce_sound.f_dif_simon(i)
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
@@ -430,7 +463,7 @@ def f_hard(frame_received):
             total_time = int(end_time - start_time)
             send_sms = "1_" + total_time
             serial_reader.f_send_data(send_sms)
-            f_reproduce_final_sound()
+            #f_reproduce_final_sound()
             f_reset_vars()
             serial_reader.received_data = ""
         else:

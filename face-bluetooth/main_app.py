@@ -4,6 +4,7 @@ import threading
 import cv2
 import simon_dice
 import movenet
+import reproduce_sound
 
 #global received_data
 
@@ -81,16 +82,15 @@ if __name__ == "__main__":
             face_recognition_functions.f_read_person(frame)
             #if face_recognition_functions.name_person != "Unknown" and face_recognition_functions.name_person != "":
             if face_recognition_functions.is_user_recognized == 1:
-                #arreglar para que sea el id de la persona
+                #reproduce_sound.f_welcome()
                 serial_reader.f_send_data(str(face_recognition_functions.id_person_recognized))
                 serial_reader.received_data = ""
-
-                # enviar el id a la tablet
 
                 face_recognition_functions.f_reset_variables()
 
             elif face_recognition_functions.is_user_recognized == -1:
                 print("No hay persona")
+                #reproduce_sound.f_no_user()
                 serial_reader.received_data = ""
                 face_recognition_functions.f_reset_variables()
 
@@ -160,15 +160,41 @@ if __name__ == "__main__":
 
         elif "good" in serial_reader.received_data:
             #reproducir reinforcement sound
+            #reproduce_sound.f_good(serial_reader.received_data.split("_")[1])
             print(serial_reader.received_data)
             serial_reader.received_data = ""
 
         elif "bad" in serial_reader.received_data:
             #reproducir reinforcement sound
+            #reproduce_sound.f_bad(serial_reader.received_data.split("_")[1])
             print(serial_reader.received_data)
             serial_reader.received_data = ""
-            
-        
+
+        elif "encuentra_diferencias" in serial_reader.received_data:
+            #reproduce_sound.f_encuentra_diferencias()
+            print(serial_reader.received_data)
+            serial_reader.received_data = ""
+
+        elif "completa_imagen" in serial_reader.received_data:
+            #reproduce_sound.f_completa_imagen()
+            print(serial_reader.received_data)
+            serial_reader.received_data = ""
+
+        elif "encuentra_objeto" in serial_reader.received_data:
+            #reproduce_sound.f_encuentra_objeto()
+            print(serial_reader.received_data)
+            serial_reader.received_data = ""
+
+        elif "atencion_auditiva" in serial_reader.received_data:
+            #reproduce_sound.f_atencion_auditiva()
+            print(serial_reader.received_data)
+            serial_reader.received_data = ""
+
+        elif "sonidos_naturaleza" in serial_reader.received_data:
+            #reproduce_sound.f_sonidos_naturaleza()
+            print(serial_reader.received_data)
+            serial_reader.received_data = ""
+
         else:
             pass
 
