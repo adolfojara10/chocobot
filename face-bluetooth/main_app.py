@@ -13,7 +13,14 @@ import random
 import sys
 
 
-global game_level_playing
+global game_level_playing, video_capture
+
+def f_reset_video_capture():
+    global video_capture
+    video_capture = cv2.VideoCapture(0, cv2.CAP_V4L2)
+    video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
+    video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)
+
 
 
 if __name__ == "__main__":
@@ -65,233 +72,244 @@ if __name__ == "__main__":
 
         if not ret:
             print("no sirve camara")
-            break
-
-        if i == 0:
-            print("cargando")
             sys.stdout.flush()
-            face_recognition_functions.f_read_person_once(frame_received=frame)
-            i+=1
-            print("cargado")
-            sys.stdout.flush()
-
-        """
-        if " " in received_data:
-            print("2")
-            #crear persona
-
-            face_recognition_functions.f_create_student(frame, received_data)
-
-            if face_recognition_functions.is_user_saved == 1:
-                print("usuario guardado")
-                serial_reader.received_data = ""
-
-                serial_reader.f_send_data("1")
-
-                face_recognition_functions.f_reset_variables()
-            elif face_recognition_functions.is_user_saved == -1:
-                serial_reader.f_send_data("-1")
-                print("usuario ya existe")"""
-        
-        """if "conciencia_corporal" in received_data:
-
-            if movenet.interpreter is None:
-                movenet.f_load_model()
-                movenet.f_reset_vars()
-
-            if received_data.split("_")[-1] == "facil":
-                #print("hhhhhh")
-                movenet.f_easy(frame)
-
-            elif received_data.split("_")[-1] == "medio":
-                movenet.f_easy(frame)
-
-            elif received_data.split("_")[-1] == "dificil":
-                movenet.f_easy(frame)"""
-
-        
-        
-        if serial_reader.received_data == "leer_persona":
-            print("1")
-            sys.stdout.flush()
-
-            face_recognition_functions.f_read_person(frame)
-            #if face_recognition_functions.name_person != "Unknown" and face_recognition_functions.name_person != "":
-            if face_recognition_functions.is_user_recognized == 1:
-                #reproduce_sound.f_welcome()
-                serial_reader.f_send_data(str(face_recognition_functions.id_person_recognized))
-                serial_reader.received_data = ""
-
-                face_recognition_functions.f_reset_variables()
-
-            elif face_recognition_functions.is_user_recognized == -1:
-                print("No hay persona")
-                #reproduce_sound.f_no_user()
-                serial_reader.received_data = ""
-                face_recognition_functions.f_reset_variables()
-
-                serial_reader.f_send_data("-1")
-
-                # enviar que la persona no existe y crear el canvas en la tablet
-
-
-
-
-                
-        elif " " in serial_reader.received_data:
-            print("2")
-            sys.stdout.flush()
-            #crear persona
-
-            face_recognition_functions.f_create_student(frame, serial_reader.received_data)
-
-            if face_recognition_functions.is_user_saved == 1:
-                print("usuario guardado")
-                sys.stdout.flush()
-                serial_reader.received_data = ""
-
-                serial_reader.f_send_data("1")
-
-                face_recognition_functions.f_reset_variables()
-                
-
-            elif face_recognition_functions.is_user_saved == -1:
-                serial_reader.received_data = ""
-                serial_reader.f_send_data("-1")
-                print("usuario ya existe")
-                sys.stdout.flush()
-                
-                face_recognition_functions.f_reset_variables()
-                # reproducir sonido que el usuario ya existe
-
-        elif "simon_dice" in serial_reader.received_data:
-            game_level_playing = serial_reader.received_data
-            
-            if serial_reader.received_data.split("_")[-1] == "facil":
-                simon_dice.f_easy(frame)
-
-            elif serial_reader.received_data.split("_")[-1] == "medio":
-                simon_dice.f_easy(frame)
-
-            elif serial_reader.received_data.split("_")[-1] == "dificil":
-                simon_dice.f_easy(frame)
-            
-        elif "conciencia_corporal" in serial_reader.received_data:
-            game_level_playing = serial_reader.received_data
-            
-            if serial_reader.received_data.split("_")[-1] == "facil":
-                movenet.f_easy(frame)
-
-            elif serial_reader.received_data.split("_")[-1] == "medio":
-                movenet.f_easy(frame)
-
-            elif serial_reader.received_data.split("_")[-1] == "dificil":
-                movenet.f_easy(frame)
-            
-        elif "yoga" in serial_reader.received_data:
-            game_level_playing = serial_reader.received_data
-            """
-            if serial_reader.received_data.split("_")[-1] == "facil":
-                movenet.f_easy(frame)
-
-            elif serial_reader.received_data.split("_")[-1] == "medio":
-                movenet.f_easy(frame)
-
-            elif serial_reader.received_data.split("_")[-1] == "dificil":
-                movenet.f_easy(frame)
-            """
-        elif "good" in serial_reader.received_data:
-            #reproducir reinforcement sound
-            #reproduce_sound.f_good(serial_reader.received_data.split("_")[1])
-            print(serial_reader.received_data)
-
-            #random_number = random.randint(1, 3)
-            #audio_dir = os.path.expanduser('/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/good/')
-            #random_audio = str(random_number) + ".mp3"
-            #audio_path = os.path.join(audio_dir, random_audio)
-            #audio = AudioSegment.from_file(audio_path)
-            #play(audio)
-
-            #reproduce_sound.f_good(game_level_playing)
-
-            serial_reader.received_data = ""
-            game_level_playing = ""
-
-
-
-
-        elif "bad" in serial_reader.received_data:
-            #reproducir reinforcement sound
-            #reproduce_sound.f_good(serial_reader.received_data.split("_")[1])
-            print(serial_reader.received_data)
-
-            #random_number = random.randint(1, 3)
-            #audio_dir = os.path.expanduser('/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/good/')
-            #random_audio = str(random_number) + ".mp3"
-            #audio_path = os.path.join(audio_dir, random_audio)
-            #audio = AudioSegment.from_file(audio_path)
-            #play(audio)
-
-            #reproduce_sound.f_bad(game_level_playing)
-            
-            serial_reader.received_data = ""
-            game_level_playing = ""
-
-
-
-        elif "encuentra_diferencias" in serial_reader.received_data:
-            game_level_playing = serial_reader.received_data
-
-            #reproduce_sound.f_encuentra_diferencias()
-            print(serial_reader.received_data)
-            serial_reader.received_data = ""
-
-        elif "completa_imagen" in serial_reader.received_data:
-            game_level_playing = serial_reader.received_data
-
-            #reproduce_sound.f_completa_imagen()
-            print(serial_reader.received_data)
-            serial_reader.received_data = ""
-
-        elif "encuentra_objeto" in serial_reader.received_data:
-            game_level_playing = serial_reader.received_data
-
-            #reproduce_sound.f_encuentra_objeto()
-            print(serial_reader.received_data)
-            serial_reader.received_data = ""
-
-        elif "atencion_auditiva" in serial_reader.received_data:
-            game_level_playing = serial_reader.received_data
-
-            #reproduce_sound.f_atencion_auditiva()
-            print(serial_reader.received_data)
-            serial_reader.received_data = ""
-
-        elif "sonidos_naturaleza" in serial_reader.received_data:
-            game_level_playing = serial_reader.received_data
-
-            #reproduce_sound.f_sonidos_naturaleza()
-            print(serial_reader.received_data)
-            serial_reader.received_data = ""
-
-        elif "cancelar" in serial_reader.received_data:
-            game_level_playing = ""
+            f_reset_video_capture()
 
         else:
-            pass
 
-        key = cv2.waitKey(1) & 0xFF
+            if i == 0:
+                print("cargando")
+                sys.stdout.flush()
+                face_recognition_functions.f_read_person_once(frame_received=frame)
+                i+=1
+                print("cargado")
+                sys.stdout.flush()
 
-        # Hit 'q' on the keyboard to quit!
-        if key == ord('q'):
-                # Release handle to the webcam
-            video_capture.release()
-            cv2.destroyAllWindows()
-            #delete_files()
-            #serial_thread.join()
-            break
+            """
+            if " " in received_data:
+                print("2")
+                #crear persona
 
-        #cv2.imshow('Video', frame)
+                face_recognition_functions.f_create_student(frame, received_data)
+
+                if face_recognition_functions.is_user_saved == 1:
+                    print("usuario guardado")
+                    serial_reader.received_data = ""
+
+                    serial_reader.f_send_data("1")
+
+                    face_recognition_functions.f_reset_variables()
+                elif face_recognition_functions.is_user_saved == -1:
+                    serial_reader.f_send_data("-1")
+                    print("usuario ya existe")"""
+            
+            """if "conciencia_corporal" in received_data:
+
+                if movenet.interpreter is None:
+                    movenet.f_load_model()
+                    movenet.f_reset_vars()
+
+                if received_data.split("_")[-1] == "facil":
+                    #print("hhhhhh")
+                    movenet.f_easy(frame)
+
+                elif received_data.split("_")[-1] == "medio":
+                    movenet.f_easy(frame)
+
+                elif received_data.split("_")[-1] == "dificil":
+                    movenet.f_easy(frame)"""
+
+            
+            
+            if serial_reader.received_data == "leer_persona":
+                print("1")
+                sys.stdout.flush()
+
+                face_recognition_functions.f_read_person(frame)
+                #if face_recognition_functions.name_person != "Unknown" and face_recognition_functions.name_person != "":
+                if face_recognition_functions.is_user_recognized == 1:
+                    #reproduce_sound.f_welcome()
+                    serial_reader.f_send_data(str(face_recognition_functions.id_person_recognized))
+                    serial_reader.received_data = ""
+
+                    face_recognition_functions.f_reset_variables()
+
+                elif face_recognition_functions.is_user_recognized == -1:
+                    print("No hay persona")
+                    #reproduce_sound.f_no_user()
+                    serial_reader.received_data = ""
+                    face_recognition_functions.f_reset_variables()
+
+                    serial_reader.f_send_data("-1")
+
+                    # enviar que la persona no existe y crear el canvas en la tablet
+
+
+
+            elif ", " in serial_reader.received_data:
+                # mandar los datos al arduino
+                print("aquiiiiiiiiiiiiii")
+                sys.stdout.flush()
+                
+                    
+            elif " " in serial_reader.received_data and game_level_playing == "":
+                print("2")
+                sys.stdout.flush()
+                #crear persona
+
+                face_recognition_functions.f_create_student(frame, serial_reader.received_data)
+
+                if face_recognition_functions.is_user_saved == 1:
+                    print("usuario guardado")
+                    sys.stdout.flush()
+                    serial_reader.received_data = ""
+
+                    serial_reader.f_send_data("1")
+
+                    face_recognition_functions.f_reset_variables()
+                    
+
+                elif face_recognition_functions.is_user_saved == -1:
+                    serial_reader.received_data = ""
+                    serial_reader.f_send_data("-1")
+                    print("usuario ya existe")
+                    sys.stdout.flush()
+                    
+                    face_recognition_functions.f_reset_variables()
+                    # reproducir sonido que el usuario ya existe
+
+            elif "simon_dice" in serial_reader.received_data:
+                game_level_playing = serial_reader.received_data
+                
+                if serial_reader.received_data.split("_")[-1] == "facil":
+                    simon_dice.f_easy(frame)
+
+                elif serial_reader.received_data.split("_")[-1] == "medio":
+                    simon_dice.f_easy(frame)
+
+                elif serial_reader.received_data.split("_")[-1] == "dificil":
+                    simon_dice.f_easy(frame)
+                
+            elif "conciencia_corporal" in serial_reader.received_data:
+                game_level_playing = serial_reader.received_data
+                
+                if serial_reader.received_data.split("_")[-1] == "facil":
+                    movenet.f_easy(frame)
+
+                elif serial_reader.received_data.split("_")[-1] == "medio":
+                    movenet.f_easy(frame)
+
+                elif serial_reader.received_data.split("_")[-1] == "dificil":
+                    movenet.f_easy(frame)
+                
+            elif "yoga" in serial_reader.received_data:
+                game_level_playing = serial_reader.received_data
+                """
+                if serial_reader.received_data.split("_")[-1] == "facil":
+                    movenet.f_easy(frame)
+
+                elif serial_reader.received_data.split("_")[-1] == "medio":
+                    movenet.f_easy(frame)
+
+                elif serial_reader.received_data.split("_")[-1] == "dificil":
+                    movenet.f_easy(frame)
+                """
+            elif "good" in serial_reader.received_data:
+                #reproducir reinforcement sound
+                #reproduce_sound.f_good(serial_reader.received_data.split("_")[1])
+                print(serial_reader.received_data)
+
+                #random_number = random.randint(1, 3)
+                #audio_dir = os.path.expanduser('/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/good/')
+                #random_audio = str(random_number) + ".mp3"
+                #audio_path = os.path.join(audio_dir, random_audio)
+                #audio = AudioSegment.from_file(audio_path)
+                #play(audio)
+
+                #reproduce_sound.f_good(game_level_playing)
+
+                serial_reader.received_data = ""
+                game_level_playing = ""
+
+
+
+
+            elif "bad" in serial_reader.received_data:
+                #reproducir reinforcement sound
+                #reproduce_sound.f_good(serial_reader.received_data.split("_")[1])
+                print(serial_reader.received_data)
+
+                #random_number = random.randint(1, 3)
+                #audio_dir = os.path.expanduser('/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/good/')
+                #random_audio = str(random_number) + ".mp3"
+                #audio_path = os.path.join(audio_dir, random_audio)
+                #audio = AudioSegment.from_file(audio_path)
+                #play(audio)
+
+                #reproduce_sound.f_bad(game_level_playing)
+                
+                serial_reader.received_data = ""
+                game_level_playing = ""
+
+
+
+            elif "encuentra_diferencias" in serial_reader.received_data:
+                game_level_playing = serial_reader.received_data
+
+                #reproduce_sound.f_encuentra_diferencias()
+                print(serial_reader.received_data)
+                serial_reader.received_data = ""
+
+            elif "completa_imagen" in serial_reader.received_data:
+                game_level_playing = serial_reader.received_data
+
+                #reproduce_sound.f_completa_imagen()
+                print(serial_reader.received_data)
+                serial_reader.received_data = ""
+
+            elif "encuentra_objeto" in serial_reader.received_data:
+                game_level_playing = serial_reader.received_data
+
+                #reproduce_sound.f_encuentra_objeto()
+                print(serial_reader.received_data)
+                serial_reader.received_data = ""
+
+            elif "atencion_auditiva" in serial_reader.received_data:
+                game_level_playing = serial_reader.received_data
+
+                #reproduce_sound.f_atencion_auditiva()
+                print(serial_reader.received_data)
+                serial_reader.received_data = ""
+
+            elif "sonidos_naturaleza" in serial_reader.received_data:
+                game_level_playing = serial_reader.received_data
+
+                #reproduce_sound.f_sonidos_naturaleza()
+                print(serial_reader.received_data)
+                serial_reader.received_data = ""
+
+            elif "jugar_robot" in serial_reader.received_data:
+                game_level_playing = "jugar_robot"
+
+            
+            elif "cancelar" in serial_reader.received_data:
+                game_level_playing = ""
+
+            else:
+                pass
+
+            key = cv2.waitKey(1) & 0xFF
+
+            # Hit 'q' on the keyboard to quit!
+            if key == ord('q'):
+                    # Release handle to the webcam
+                video_capture.release()
+                cv2.destroyAllWindows()
+                #delete_files()
+                #serial_thread.join()
+                break
+
+            #cv2.imshow('Video', frame)
 
         
 
