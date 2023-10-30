@@ -5,11 +5,23 @@ import cv2
 import simon_dice
 import movenet
 import reproduce_sound
+import subprocess
 
 #global received_data
 
 
 if __name__ == "__main__":
+    # Define the command to list and kill processes using /dev/ttyTHS1
+    command = 'lsof /dev/ttyTHS1 | awk \'NR>1 {print $2}\' | xargs -I {} kill -9 {}'
+
+    # Execute the command using subprocess
+    try:
+        subprocess.run(command, shell=True, check=True)
+        print("Processes using /dev/ttyTHS1 have been terminated.")
+    except subprocess.CalledProcessError:
+        print("Failed to terminate processes or no processes were found.")
+
+        
     serial_reader.f_start_vars()
     simon_dice.f_reset_vars()
     face_recognition_functions.f_load_saved_faces()
