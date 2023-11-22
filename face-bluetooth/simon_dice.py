@@ -15,7 +15,7 @@ def f_reset_vars():
 def f_easy(frame_received):
     global i, is_command_sounded, start_time, end_time
 
-    print(str(i))
+    #print(str(i))
 
     if i == 0:
         if not is_command_sounded:
@@ -109,7 +109,7 @@ def f_easy(frame_received):
 def f_medium(frame_received):
     global i, is_command_sounded, start_time, end_time
 
-    print(str(i))
+    #print(str(i))
 
     if i == 0:
         if not is_command_sounded:
@@ -308,7 +308,7 @@ def f_medium(frame_received):
 def f_hard(frame_received):
     global i, is_command_sounded, start_time, end_time
 
-    print(str(i))
+    #print(str(i))
 
     if i == 0:
         if not is_command_sounded:

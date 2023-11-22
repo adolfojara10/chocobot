@@ -6,11 +6,17 @@ import simon_dice
 import movenet
 import reproduce_sound
 import subprocess
+from pydub import AudioSegment
+from pydub.playback import play
+import os
+import random
 
-#global received_data
+global game_level_playing
 
 
 if __name__ == "__main__":
+    game_level_playing = ""
+    
     # Define the command to list and kill processes using /dev/ttyTHS1
     command = 'lsof /dev/ttyTHS1 | awk \'NR>1 {print $2}\' | xargs -I {} kill -9 {}'
 
@@ -138,6 +144,7 @@ if __name__ == "__main__":
                 # reproducir sonido que el usuario ya existe
 
         elif "simon_dice" in serial_reader.received_data:
+            game_level_playing = serial_reader.received_data
 
             if serial_reader.received_data.split("_")[-1] == "facil":
                 simon_dice.f_easy(frame)
@@ -149,6 +156,7 @@ if __name__ == "__main__":
                 simon_dice.f_easy(frame)
 
         elif "conciencia_corporal" in serial_reader.received_data:
+            game_level_playing = serial_reader.received_data
 
             if serial_reader.received_data.split("_")[-1] == "facil":
                 movenet.f_easy(frame)
@@ -160,6 +168,7 @@ if __name__ == "__main__":
                 movenet.f_easy(frame)
 
         elif "yoga" in serial_reader.received_data:
+            game_level_playing = serial_reader.received_data
 
             if serial_reader.received_data.split("_")[-1] == "facil":
                 movenet.f_easy(frame)
@@ -174,38 +183,78 @@ if __name__ == "__main__":
             #reproducir reinforcement sound
             #reproduce_sound.f_good(serial_reader.received_data.split("_")[1])
             print(serial_reader.received_data)
+
+            #random_number = random.randint(1, 3)
+            #audio_dir = os.path.expanduser('/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/good/')
+            #random_audio = str(random_number) + ".mp3"
+            #audio_path = os.path.join(audio_dir, random_audio)
+            #audio = AudioSegment.from_file(audio_path)
+            #play(audio)
+
+            #reproduce_sound.f_good(game_level_playing)
+
             serial_reader.received_data = ""
+            game_level_playing = ""
+
+
+
 
         elif "bad" in serial_reader.received_data:
             #reproducir reinforcement sound
-            #reproduce_sound.f_bad(serial_reader.received_data.split("_")[1])
+            #reproduce_sound.f_good(serial_reader.received_data.split("_")[1])
             print(serial_reader.received_data)
+
+            #random_number = random.randint(1, 3)
+            #audio_dir = os.path.expanduser('/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/good/')
+            #random_audio = str(random_number) + ".mp3"
+            #audio_path = os.path.join(audio_dir, random_audio)
+            #audio = AudioSegment.from_file(audio_path)
+            #play(audio)
+
+            #reproduce_sound.f_bad(game_level_playing)
+            
             serial_reader.received_data = ""
+            game_level_playing = ""
+
+
 
         elif "encuentra_diferencias" in serial_reader.received_data:
+            game_level_playing = serial_reader.received_data
+
             #reproduce_sound.f_encuentra_diferencias()
             print(serial_reader.received_data)
             serial_reader.received_data = ""
 
         elif "completa_imagen" in serial_reader.received_data:
+            game_level_playing = serial_reader.received_data
+
             #reproduce_sound.f_completa_imagen()
             print(serial_reader.received_data)
             serial_reader.received_data = ""
 
         elif "encuentra_objeto" in serial_reader.received_data:
+            game_level_playing = serial_reader.received_data
+
             #reproduce_sound.f_encuentra_objeto()
             print(serial_reader.received_data)
             serial_reader.received_data = ""
 
         elif "atencion_auditiva" in serial_reader.received_data:
+            game_level_playing = serial_reader.received_data
+
             #reproduce_sound.f_atencion_auditiva()
             print(serial_reader.received_data)
             serial_reader.received_data = ""
 
         elif "sonidos_naturaleza" in serial_reader.received_data:
+            game_level_playing = serial_reader.received_data
+
             #reproduce_sound.f_sonidos_naturaleza()
             print(serial_reader.received_data)
             serial_reader.received_data = ""
+
+        elif "cancelar" in serial_reader.received_data:
+            game_level_playing = ""
 
         else:
             pass
