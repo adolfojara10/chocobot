@@ -182,12 +182,12 @@ def f_draw_faces():
         #print(face_locations)
 
         # Draw a box around the face
-        cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+        """cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
 
         # Draw a label with a name below the face
         cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
         font = cv2.FONT_HERSHEY_DUPLEX
-        cv2.putText(frame, str(name), (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+        cv2.putText(frame, str(name), (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)"""
 
 
 def f_prove_existance(prove_face_encoding, new_name):
@@ -323,7 +323,23 @@ def f_read_person(frame_received):
     if len(list_check_person) == 50:
         list_check_person = []
 
-        
+
+def f_read_person_once(frame_received):
+    global frame, rgb_small_frame, face_locations, name_person, list_check_person, face_encodings
+
+    frame = frame_received
+
+    frame = cv2.flip(frame, 1)
+
+    #if process_this_frame:
+    # Resize frame of video to 1/4 size for faster face recognition processing
+    small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+
+    # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
+    rgb_small_frame = small_frame[:, :, ::-1]
+    
+    # Find all the faces and face encodings in the current frame of video
+    face_recognition.face_locations(rgb_small_frame, model="cnn", number_of_times_to_upsample=2)    
 
 
     
@@ -447,7 +463,7 @@ def f_start():
 
 
         # Display the resulting image
-        cv2.imshow('Video', frame)
+        #cv2.imshow('Video', frame)
 
 
 

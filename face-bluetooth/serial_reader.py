@@ -1,6 +1,7 @@
 import serial
 import threading
 import time
+import sys
 
 global received_data, ser
 
@@ -50,6 +51,7 @@ def serial_reader():
                 if data != "":
                     received_data = data
                     print(data)
+                    sys.stdout.flush()
         except serial.SerialException as e:
             print("SerialException:", str(e))
             # Handle the exception as needed, e.g., log the error or other actions.

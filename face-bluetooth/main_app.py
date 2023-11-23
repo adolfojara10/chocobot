@@ -10,6 +10,8 @@ from pydub import AudioSegment
 from pydub.playback import play
 import os
 import random
+import sys
+
 
 global game_level_playing
 
@@ -24,8 +26,10 @@ if __name__ == "__main__":
     try:
         subprocess.run(command, shell=True, check=True)
         print("Processes using /dev/ttyTHS1 have been terminated.")
+        sys.stdout.flush()
     except subprocess.CalledProcessError:
         print("Failed to terminate processes or no processes were found.")
+        sys.stdout.flush()
 
         
     serial_reader.f_start_vars()
@@ -49,15 +53,27 @@ if __name__ == "__main__":
     video_capture = cv2.VideoCapture(0, cv2.CAP_V4L2)
     video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
     video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)
+    i = 0
 
     
 
     while True:
         ret, frame = video_capture.read()
 
+        #print("camaraaaa")
+        #sys.stdout.flush()
+
         if not ret:
             print("no sirve camara")
             break
+
+        if i == 0:
+            print("cargando")
+            sys.stdout.flush()
+            face_recognition_functions.f_read_person_once(frame_received=frame)
+            i+=1
+            print("cargado")
+            sys.stdout.flush()
 
         """
         if " " in received_data:
@@ -97,6 +113,8 @@ if __name__ == "__main__":
         
         if serial_reader.received_data == "leer_persona":
             print("1")
+            sys.stdout.flush()
+
             face_recognition_functions.f_read_person(frame)
             #if face_recognition_functions.name_person != "Unknown" and face_recognition_functions.name_person != "":
             if face_recognition_functions.is_user_recognized == 1:
@@ -122,12 +140,14 @@ if __name__ == "__main__":
                 
         elif " " in serial_reader.received_data:
             print("2")
+            sys.stdout.flush()
             #crear persona
 
             face_recognition_functions.f_create_student(frame, serial_reader.received_data)
 
             if face_recognition_functions.is_user_saved == 1:
                 print("usuario guardado")
+                sys.stdout.flush()
                 serial_reader.received_data = ""
 
                 serial_reader.f_send_data("1")
@@ -139,13 +159,14 @@ if __name__ == "__main__":
                 serial_reader.received_data = ""
                 serial_reader.f_send_data("-1")
                 print("usuario ya existe")
+                sys.stdout.flush()
                 
                 face_recognition_functions.f_reset_variables()
                 # reproducir sonido que el usuario ya existe
 
         elif "simon_dice" in serial_reader.received_data:
             game_level_playing = serial_reader.received_data
-
+            
             if serial_reader.received_data.split("_")[-1] == "facil":
                 simon_dice.f_easy(frame)
 
@@ -154,10 +175,10 @@ if __name__ == "__main__":
 
             elif serial_reader.received_data.split("_")[-1] == "dificil":
                 simon_dice.f_easy(frame)
-
+            
         elif "conciencia_corporal" in serial_reader.received_data:
             game_level_playing = serial_reader.received_data
-
+            
             if serial_reader.received_data.split("_")[-1] == "facil":
                 movenet.f_easy(frame)
 
@@ -166,10 +187,10 @@ if __name__ == "__main__":
 
             elif serial_reader.received_data.split("_")[-1] == "dificil":
                 movenet.f_easy(frame)
-
+            
         elif "yoga" in serial_reader.received_data:
             game_level_playing = serial_reader.received_data
-
+            """
             if serial_reader.received_data.split("_")[-1] == "facil":
                 movenet.f_easy(frame)
 
@@ -178,7 +199,7 @@ if __name__ == "__main__":
 
             elif serial_reader.received_data.split("_")[-1] == "dificil":
                 movenet.f_easy(frame)
-
+            """
         elif "good" in serial_reader.received_data:
             #reproducir reinforcement sound
             #reproduce_sound.f_good(serial_reader.received_data.split("_")[1])
@@ -270,7 +291,7 @@ if __name__ == "__main__":
             #serial_thread.join()
             break
 
-        cv2.imshow('Video', frame)
+        #cv2.imshow('Video', frame)
 
         
 
