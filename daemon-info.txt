@@ -46,3 +46,26 @@ PYTHON_EXECUTABLE="/usr/bin/python3"
 
 sudo $PYTHON_EXECUTABLE /home/catedra/Desktop/chocobot/chocobot/face-bluetooth/main_app.py
 
+
+#
+#
+#
+# pulseaudio
+#
+#
+
+# crear servicio
+sudo vi /etc/systemd/system/pulseaudio-startup.service
+
+# in pulseaudio-startup.service
+[Unit]
+Description=PulseAudio Startup
+
+[Service]
+User=root
+Type=simple
+ExecStart=/usr/bin/pulseaudio -D --system
+
+[Install]
+WantedBy=multi-user.target
+

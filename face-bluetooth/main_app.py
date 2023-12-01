@@ -1,6 +1,8 @@
 import serial_reader
 import face_recognition_functions
 import threading
+#import pygame
+#pygame.init()
 import cv2
 import simon_dice
 import movenet
@@ -9,8 +11,10 @@ import subprocess
 from pydub import AudioSegment
 from pydub.playback import play
 import os
-import random
+import time
 import sys
+import serial
+from playsound import playsound
 
 
 global game_level_playing, video_capture
@@ -38,24 +42,63 @@ if __name__ == "__main__":
         print("Failed to terminate processes or no processes were found.")
         sys.stdout.flush()
 
-        
+    time.sleep(10)
+
+    subprocess.run(["xhost", "+"], check=True)
+
+    time.sleep(10)
+    
+    try:
+        # Run the pulseaudio command as root
+        result = subprocess.run(['sudo', 'pulseaudio', '-D', '--system'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+        print(result.stdout)
+        sys.stdout.flush()
+    except subprocess.CalledProcessError as e:
+        print(f"Error running pulseaudio: {e}")
+        print(e.stdout)
+        sys.stdout.flush()
+
+    time.sleep(10)
+
+
+    
+    
+            
     serial_reader.f_start_vars()
     simon_dice.f_reset_vars()
     face_recognition_functions.f_load_saved_faces()
     face_recognition_functions.f_reset_variables()
     movenet.f_load_model()
     movenet.f_reset_vars()
-    
+    #reproduce_sound.f_good("simon_dice_facil")
     #received_data = ""
     #received_data = "13 Adolfo Jara"
     #received_data = "conciencia_corporal_facil"
+    """pygame.mixer.music.load("/home/catedra/Desktop/chocobot/chocobot/audios-estaticos/empezar_conversacion.mp3")
 
+    # Play the audio file
+    pygame.mixer.music.play()
+
+    # Wait until playback is finished
+    while pygame.mixer.music.get_busy():
+        continue"""
+    
+    #path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/audios-estaticos/empezar_conversacion.mp3"
+
+    # Play the audio
+    #playsound(path_to_audio)    
 
     # Create a thread for serial communication
     serial_thread = threading.Thread(target=serial_reader.serial_reader)
 
     # Start the serial communication thread
     serial_thread.start()
+
+    """serial_port = "/dev/ttyACM0"
+    baud_rate = 9600
+    serial_connection = serial.Serial(serial_port, baud_rate)"""
+
+    time.sleep(30)
 
     video_capture = cv2.VideoCapture(0, cv2.CAP_V4L2)
     video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
@@ -84,6 +127,8 @@ if __name__ == "__main__":
                 i+=1
                 print("cargado")
                 sys.stdout.flush()
+                time.sleep(4)
+                reproduce_sound.f_good("yoga_facil")
 
             """
             if " " in received_data:
@@ -146,10 +191,14 @@ if __name__ == "__main__":
 
 
 
-            elif ", " in serial_reader.received_data:
-                # mandar los datos al arduino
-                print("aquiiiiiiiiiiiiii")
-                sys.stdout.flush()
+            elif "jugar_robot" in serial_reader.received_data:
+                cmd_send_arduino = serial_reader.received_data.split("_")[-1]
+                # enviar datos al arduino
+
+                # serial_connection.write(cmd_send_arduino.encode())
+
+                
+                game_level_playing = "jugar_robot"
                 
                     
             elif " " in serial_reader.received_data and game_level_playing == "":
@@ -204,6 +253,12 @@ if __name__ == "__main__":
                 
             elif "yoga" in serial_reader.received_data:
                 game_level_playing = serial_reader.received_data
+
+                result = reproduce_sound.f_yoga(game_level_playing)
+
+                serial_reader.f_send_data("game_completed")
+
+
                 """
                 if serial_reader.received_data.split("_")[-1] == "facil":
                     movenet.f_easy(frame)
@@ -225,8 +280,13 @@ if __name__ == "__main__":
                 #audio_path = os.path.join(audio_dir, random_audio)
                 #audio = AudioSegment.from_file(audio_path)
                 #play(audio)
+                
+                #reproduce_sound.f_good("yoga_facil")
 
-                #reproduce_sound.f_good(game_level_playing)
+                reproduce_sound.f_good(game_level_playing)
+                #print(game_level_playing)
+
+
 
                 serial_reader.received_data = ""
                 game_level_playing = ""
@@ -246,7 +306,7 @@ if __name__ == "__main__":
                 #audio = AudioSegment.from_file(audio_path)
                 #play(audio)
 
-                #reproduce_sound.f_bad(game_level_playing)
+                reproduce_sound.f_bad()
                 
                 serial_reader.received_data = ""
                 game_level_playing = ""
@@ -294,6 +354,7 @@ if __name__ == "__main__":
             
             elif "cancelar" in serial_reader.received_data:
                 game_level_playing = ""
+                reproduce_sound.f_stop_sound()
 
             else:
                 pass
