@@ -29,29 +29,8 @@ def f_reset_video_capture():
 
 if __name__ == "__main__":
     game_level_playing = ""
-    
-    # Define the command to list and kill processes using /dev/ttyTHS1
-    command = 'lsof /dev/ttyTHS1 | awk \'NR>1 {print $2}\' | xargs -I {} kill -9 {}'
 
-    # Execute the command using subprocess
-    try:
-        subprocess.run(command, shell=True, check=True)
-        print("Processes using /dev/ttyTHS1 have been terminated.")
-        sys.stdout.flush()
-    except subprocess.CalledProcessError:
-        print("Failed to terminate processes or no processes were found.")
-        sys.stdout.flush()
 
-    time.sleep(10)
-
-    try:
-        subprocess.run(["xhost", "+"], check=True)
-    except subprocess.CalledProcessError:
-        print("Failed to terminate xhost")
-        sys.stdout.flush()
-
-    time.sleep(10)
-    
     try:
         # Run the pulseaudio command as root
         """result = subprocess.run(['sudo', 'pulseaudio', '-D', '--system'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
@@ -89,6 +68,31 @@ if __name__ == "__main__":
         print(f"Error executing command: {e}")
 
     time.sleep(10)
+
+    
+    # Define the command to list and kill processes using /dev/ttyTHS1
+    command = 'lsof /dev/ttyTHS1 | awk \'NR>1 {print $2}\' | xargs -I {} kill -9 {}'
+
+    # Execute the command using subprocess
+    try:
+        subprocess.run(command, shell=True, check=True)
+        print("Processes using /dev/ttyTHS1 have been terminated.")
+        sys.stdout.flush()
+    except subprocess.CalledProcessError:
+        print("Failed to terminate processes or no processes were found.")
+        sys.stdout.flush()
+
+    time.sleep(10)
+
+    try:
+        subprocess.run(["xhost", "+"], check=True)
+    except subprocess.CalledProcessError:
+        print("Failed to terminate xhost")
+        sys.stdout.flush()
+
+    time.sleep(10)
+    
+    
     
     
             
@@ -121,6 +125,7 @@ if __name__ == "__main__":
 
     # Start the serial communication thread
     serial_thread.start()
+    #serial_reader.f_send_data("hh")
 
     """serial_port = "/dev/ttyACM0"
     baud_rate = 9600
@@ -151,7 +156,7 @@ if __name__ == "__main__":
             if i == 0:
                 print("cargando")
                 sys.stdout.flush()
-                #face_recognition_functions.f_read_person_once(frame_received=frame)
+                face_recognition_functions.f_read_person_once(frame_received=frame)
                 i+=1
                 print("cargado")
                 sys.stdout.flush()
@@ -193,7 +198,7 @@ if __name__ == "__main__":
                 elif received_data.split("_")[-1] == "dificil":
                     movenet.f_easy(frame)"""
 
-            
+            print(serial_reader.received_data)            
             
             if serial_reader.received_data == "leer_persona":
                 print("1")
@@ -202,7 +207,7 @@ if __name__ == "__main__":
                 face_recognition_functions.f_read_person(frame)
                 #if face_recognition_functions.name_person != "Unknown" and face_recognition_functions.name_person != "":
                 if face_recognition_functions.is_user_recognized == 1:
-                    #reproduce_sound.f_welcome()
+                    reproduce_sound.f_welcome()
                     serial_reader.f_send_data(str(face_recognition_functions.id_person_recognized))
                     serial_reader.received_data = ""
 
@@ -258,6 +263,8 @@ if __name__ == "__main__":
 
             elif "simon_dice" in serial_reader.received_data:
                 game_level_playing = serial_reader.received_data
+                serial_reader.received_data = ""
+
                 """
                 if serial_reader.received_data.split("_")[-1] == "facil":
                     simon_dice.f_easy(frame)
@@ -270,6 +277,8 @@ if __name__ == "__main__":
                 
             elif "conciencia_corporal" in serial_reader.received_data:
                 game_level_playing = serial_reader.received_data
+                serial_reader.received_data = ""
+
                 """
                 if serial_reader.received_data.split("_")[-1] == "facil":
                     movenet.f_easy(frame)
@@ -313,7 +322,7 @@ if __name__ == "__main__":
                 #audio = AudioSegment.from_file(audio_path)
                 #play(audio)
                 
-                reproduce_sound.f_good("yoga_facil")
+                
 
                 reproduce_sound.f_good(game_level_playing)
                 #print(game_level_playing)
@@ -343,7 +352,7 @@ if __name__ == "__main__":
                 reproduce_sound.f_bad2()
                 
                 serial_reader.received_data = ""
-                game_level_playing = ""
+                #game_level_playing = ""
 
 
 
@@ -382,10 +391,7 @@ if __name__ == "__main__":
                 print(serial_reader.received_data)
                 serial_reader.received_data = ""
 
-            elif "jugar_robot" in serial_reader.received_data:
-                game_level_playing = "jugar_robot"
-
-            
+                        
             elif "cancelar" in serial_reader.received_data:
                 game_level_playing = ""
                 serial_reader.received_data = ""

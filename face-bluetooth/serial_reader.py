@@ -46,6 +46,8 @@ def serial_reader():
 
             print("hola serial")
 
+            f_send_data("hh")
+
             while True:
                 data = rl.readline()
                 if data != "":

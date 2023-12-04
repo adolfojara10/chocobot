@@ -279,6 +279,7 @@ def f_save_name_id(name_student):
 def f_read_person(frame_received):
     global frame, rgb_small_frame, face_locations, name_person, list_check_person, face_encodings
 
+    print("reconocer persona")
     frame = frame_received
 
     frame = cv2.flip(frame, 1)
