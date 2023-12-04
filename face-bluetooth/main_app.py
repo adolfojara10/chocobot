@@ -5,7 +5,7 @@ import threading
 #pygame.init()
 import cv2
 import simon_dice
-#import movenet
+import movenet
 import reproduce_sound
 import subprocess
 from pydub import AudioSegment
@@ -19,6 +19,7 @@ import serial
 
 global game_level_playing, video_capture
 
+
 def f_reset_video_capture():
     global video_capture
     video_capture = cv2.VideoCapture(0, cv2.CAP_V4L2)
@@ -28,9 +29,8 @@ def f_reset_video_capture():
 
 def f_reset_vars():
     
-    #simon_dice.f_reset_vars()
-    #movenet.f_reset_vars()
-    pass
+    simon_dice.f_reset_vars()
+    movenet.f_reset_vars()
 
 
 if __name__ == "__main__":
@@ -85,6 +85,7 @@ if __name__ == "__main__":
     time.sleep(10)
     
     try:
+        
         sudoPassword = 'catedra'
         command = 'sudo chmod 777 /dev/ttyACM0'
         os.popen("sudo -S %s"%(command), 'w').write('catedra')
@@ -115,8 +116,8 @@ if __name__ == "__main__":
     simon_dice.f_reset_vars()
     face_recognition_functions.f_load_saved_faces()
     face_recognition_functions.f_reset_variables()
-    #movenet.f_load_model()
-    #movenet.f_reset_vars()
+    movenet.f_load_model()
+    movenet.f_reset_vars()
     #reproduce_sound.f_good("simon_dice_facil")
     #received_data = ""
     #received_data = "13 Adolfo Jara"
@@ -156,9 +157,13 @@ if __name__ == "__main__":
     serial_thread.start()
     #serial_reader.f_send_data("hh")
 
-    serial_port = "/dev/ttyACM0"
+    """serial_port = "/dev/ttyACM0"
     baud_rate = 9600
     serial_connection = serial.Serial(serial_port, baud_rate)
+    serial_connection.write("i\n")
+    time.sleep(5)
+    serial_connection.write("4\n")
+    """
 
     time.sleep(30)
 
@@ -258,11 +263,25 @@ if __name__ == "__main__":
                 cmd_send_arduino = serial_reader.received_data.split("_")[-1]
                 # enviar datos al arduino
 
+                if cmd_send_arduino == "v 0 0":
+                    time.sleep(4)
+                elif cmd_send_arduino == "i":
+                    #serial_connection.write("p\n")
+                    time.sleep(4)    
+
                 cmd_send_arduino += "\n"
 
-                serial_connection.write(cmd_send_arduino.encode())
+                #serial_connection.write(cmd_send_arduino.encode())
                 
                 game_level_playing = "jugar_robot"
+
+            
+            elif "test_serial" in serial_reader.received_data:
+                
+                if "2" in serial_reader.received_data:
+                    reproduce_sound.f_test_serial()
+
+                serial_reader.received_data = ""
                 
                     
             elif " " in serial_reader.received_data and game_level_playing == "":
@@ -427,6 +446,22 @@ if __name__ == "__main__":
                 serial_reader.received_data = ""
                 f_reset_vars()
                 reproduce_sound.f_stop_audio()
+
+            elif "apagar" in serial_reader.received_data:
+                
+                #serial_connection.write("p\n")
+
+                time.sleep(10)
+
+                command = 'sudo shutdown -h now'
+
+                # Execute the command using subprocess
+                try:
+                    subprocess.run(command, shell=True, check=True)
+                    sys.stdout.flush()
+                except subprocess.CalledProcessError:
+                    print("Failed to terminate processes or no processes were found.")
+                    sys.stdout.flush()
 
             else:
                 pass

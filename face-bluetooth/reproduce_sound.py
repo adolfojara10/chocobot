@@ -403,5 +403,12 @@ def f_sonidos_naturaleza():
     audio = AudioSegment.from_file(path_to_audio)
     play(audio)  
 
+
+def f_test_serial():
+    path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/test_serial.mp3"
+    audio = AudioSegment.from_file(path_to_audio)
+    play(audio)  
+
+
 #if __name__ == "__main__":
 #    f_good(1)
