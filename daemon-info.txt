@@ -1,5 +1,6 @@
 # check service in live outputs
 journalctl -fu chocobot.service
+sudo journalctl -u your-service-name.service
 
 # restart service
 sudo systemctl daemon-reload
@@ -24,11 +25,12 @@ sudo systemctl status chocobot.service
 
 # file chocobot.service
 [Unit]
-Description=CHocobot
+Description=trial3
 
 [Service]
 User=catedra
 Type=simple
+Environment="DISPLAY=:0"
 # Environment="/usr/bin/python3"
 # Environment="PATH=/usr/local/bin:/usr/bin:/bin"
 # Environment="LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/lib"
@@ -39,33 +41,32 @@ WorkingDirectory=/home/catedra/Desktop/chocobot/chocobot/face-bluetooth
 WantedBy=multi-user.target
 
 
+
 # file myapp.sh
 #!/bin/bash
 
-PYTHON_EXECUTABLE="/usr/bin/python3"
+# unset DISPLAY
+# export HOME=/home/catedra
+# export USER=catedra
+export PYTHON_EXECUTABLE="/usr/bin/python3"
 
-sudo $PYTHON_EXECUTABLE /home/catedra/Desktop/chocobot/chocobot/face-bluetooth/main_app.py
+$PYTHON_EXECUTABLE /home/catedra/Desktop/chocobot/chocobot/face-bluetooth/main_app.py
 
 
-#
-#
-#
-# pulseaudio
-#
-#
 
-# crear servicio
-sudo vi /etc/systemd/system/pulseaudio-startup.service
+# sudo visudo
+ALL ALL=(ALL) NOPASSWD: /home/catedra/Desktop/audio/trial2.py
+ALL ALL=(ALL) NOPASSWD: /home/catedra/Desktop/audio/trial1.py
+catedra ALL=(ALL) NOPASSWD: /home/catedra/Desktop/audio/trial2.py
+catedra ALL=(ALL) NOPASSWD: /home/catedra/Desktop/audio/trial1.py
 
-# in pulseaudio-startup.service
-[Unit]
-Description=PulseAudio Startup
+catedra ALL=(ALL) NOPASSWD: /home/catedra/Desktop/chocobot/chocobot/face-bluetooth/main_app.py
+ALL ALL=(ALL) NOPASSWD: /home/catedra/Desktop/chocobot/chocobot/face-bluetooth/main_app.py
 
-[Service]
-User=root
-Type=simple
-ExecStart=/usr/bin/pulseaudio -D --system
+catedra ALL=(ALL) NOPASSWD: /home/catedra/Desktop/chocobot/chocobot/face-bluetooth/myapp.sh
+ALL ALL=(ALL) NOPASSWD: /home/catedra/Desktop/chocobot/chocobot/face-bluetooth/myapp.sh
 
-[Install]
-WantedBy=multi-user.target
+catedra ALL=(ALL) NOPASSWD: ALL
+
+
 

@@ -1,14 +1,20 @@
 from pydub import AudioSegment
 from pydub.playback import play, _play_with_simpleaudio
-
+from multiprocessing import Process
+import pygame
 import os
 import random
+
 
 global audio_playing
 
 def f_stop_sound():
     global audio_playing
-    audio_playing.stop()
+    try:
+        audio_playing.terminate()
+    except Exception as e:
+        print("exception from stop(): ", e)
+
 
 def f_check_sounds():
     pass
@@ -157,14 +163,40 @@ def f_good(game_level):
 
 
 
-def f_bad():
-    random_number = random.randint(1, 64)
+def f_bad2():
+    #random_number = random.randint(1, 64)
+    random_number = random.randint(1, 4)
     
-    audio_dir = os.path.expanduser('/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/bad/')
+    #audio_dir = os.path.expanduser('/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/bad/')
+    audio_dir = os.path.expanduser('/home/catedra/Desktop/chocobot/chocobot/audios-estaticos/')
     random_audio = str(random_number) + ".mp3"
     audio_path = os.path.join(audio_dir, random_audio)
     audio = AudioSegment.from_file(audio_path)
     play(audio)
+
+
+
+
+def f_bad():
+    random_number = random.randint(1, 4)
+    
+    audio_dir = os.path.expanduser('/home/catedra/Desktop/chocobot/chocobot/audios-estaticos/')
+    random_audio = str(random_number) + ".mp3"
+    audio_path = os.path.join(audio_dir, random_audio)
+
+    # Initialize Pygame and mixer
+    pygame.mixer.init()
+
+    # Load the audio file
+    pygame.mixer.music.load(audio_path)
+
+    # Play the audio
+    pygame.mixer.music.play()
+
+    # Wait for the audio to finish
+    while pygame.mixer.music.get_busy():
+        pygame.time.Clock().tick(10)
+   
     
 
 
@@ -253,6 +285,14 @@ def f_dif_movenet(number_of_track):
 ||
 ||
 """
+def f_play_audio_yoga(audio):
+    global audio_playing
+    print("hola-------------------1")
+    audio_playing = Process(target=play, args=(audio,))
+    audio_playing.start()
+    audio_playing.join()
+    print("hola-------------------2")
+
 
 def f_yoga(game_level):
     global audio_playing
@@ -262,25 +302,21 @@ def f_yoga(game_level):
     play(audio)"""
 
     if game_level.split("_")[-1] == "facil":
-        path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/yoga/YogaSesion1.mp3"
+        #path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/yoga/YogaSesion1.mp3"
+        path_to_audio = os.path.expanduser('/home/catedra/Desktop/chocobot/chocobot/audios-estaticos/YogaSesion1.mp3')
         audio = AudioSegment.from_file(path_to_audio)
-        audio_playing = _play_with_simpleaudio(audio)
+        f_play_audio_yoga(audio)
 
     elif game_level.split("_")[-1] == "medio":
         path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/yoga/YogaSesion2.mp3"
         audio = AudioSegment.from_file(path_to_audio)
-        play(audio)
+        f_play_audio_yoga(audio)
 
     elif game_level.split("_")[-1] == "dificil":
         path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/yoga/YogaSesion3.mp3"
         audio = AudioSegment.from_file(path_to_audio)
-        play(audio)
-    """
-    while is_playing():
-        pass  # Do nothing and wait"""
-
-    # The sound has ended
-    return "done"
+        f_play_audio_yoga(audio)
+    
 
 
 """
