@@ -36,30 +36,22 @@ def f_reset_vars():
 if __name__ == "__main__":
     game_level_playing = ""
 
-
+    """
     try:
         # Run the pulseaudio command as root
-        """result = subprocess.run(['sudo', 'pulseaudio', '-D', '--system'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+        result = subprocess.run(['sudo', 'pulseaudio', '-D', '--system'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
         print(result.stdout)
-        sys.stdout.flush()"""
+        sys.stdout.flush()
         sudoPassword = 'catedra'
         command = 'sudo chown catedra /dev/ttyTHS1'
         os.popen("sudo -S %s"%(command), 'w').write('catedra')
 
-        # Replace 'catedra' with the appropriate username
-        """username = 'catedra'
-
-        # Replace '/dev/ttyTHS1' with the appropriate device path
-        device_path = '/dev/ttyTHS1'
-
-        # Run the chown command with sudo
-        subprocess.run(['sudo','chown', f'{username}:{username}', device_path], check=True)"""
     except Exception as e:
         print(f"Error running pulseaudio: {e}")
         print(e.stdout)
         sys.stdout.flush()
 
-    time.sleep(10)
+    time.sleep(10)"""
 
     
     
@@ -157,7 +149,7 @@ if __name__ == "__main__":
     serial_thread.start()
     #serial_reader.f_send_data("hh")
 
-    """
+    
     serial_port = "/dev/ttyACM0"
     baud_rate = 9600
     serial_connection = serial.Serial(serial_port, baud_rate)
@@ -165,7 +157,7 @@ if __name__ == "__main__":
     #time.sleep(5)
     #serial_connection.write("i\n".encode())
     time.sleep(5)
-    serial_connection.write("3\n".encode())"""
+    serial_connection.write("3\n".encode())
     
 
     time.sleep(30)
@@ -269,12 +261,12 @@ if __name__ == "__main__":
                 if cmd_send_arduino == "v 0 0":
                     time.sleep(4)
                 elif cmd_send_arduino == "i":
-                    #serial_connection.write("p\n".encode())
+                    serial_connection.write("p\n".encode())
                     time.sleep(4)    
 
                 cmd_send_arduino += "\n"
 
-                #serial_connection.write(cmd_send_arduino.encode())
+                serial_connection.write(cmd_send_arduino.encode())
                 
                 game_level_playing = "jugar_robot"
 
@@ -458,7 +450,7 @@ if __name__ == "__main__":
 
             elif "apagar" in serial_reader.received_data:
                 
-                #serial_connection.write("p\n")
+                serial_connection.write("p\n".encode())
 
                 time.sleep(5)
 
@@ -489,7 +481,7 @@ if __name__ == "__main__":
                 #serial_thread.join()
                 break
 
-            cv2.imshow('Video', frame)
+            #cv2.imshow('Video', frame)
 
         
 

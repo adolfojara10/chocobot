@@ -70,3 +70,9 @@ catedra ALL=(ALL) NOPASSWD: ALL
 
 
 
+######change audio output
+https://how.wtf/how-to-set-default-audio-in-ubuntu.html
+
+
+
+
