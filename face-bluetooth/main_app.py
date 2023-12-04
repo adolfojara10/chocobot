@@ -143,9 +143,9 @@ if __name__ == "__main__":
     serial_thread.start()
     #serial_reader.f_send_data("hh")
 
-    serial_port = "/dev/ttyACM0"
+    """serial_port = "/dev/ttyACM0"
     baud_rate = 9600
-    serial_connection = serial.Serial(serial_port, baud_rate)
+    serial_connection = serial.Serial(serial_port, baud_rate)"""
 
     time.sleep(30)
 
@@ -247,7 +247,7 @@ if __name__ == "__main__":
 
                 cmd_send_arduino += "\n"
 
-                serial_connection.write(cmd_send_arduino.encode())
+                #serial_connection.write(cmd_send_arduino.encode())
                 
                 game_level_playing = "jugar_robot"
                 
