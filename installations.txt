@@ -11,3 +11,10 @@ sudo apt install ./vscode-linux-deb.arm64.deb
 
 install vosk:
 pip3 install https://github.com/alphacep/vosk-api/releases/download/v0.3.42/vosk-0.3.42-py3-none-linux_aarch64.whl
+
+pyzbar:
+sudo python3 -m pip install pyzbar
+
+tensorflow (intentar):
+sudo pip3 install --pre --extra-index-url https://developer.download.nvidia.com/compute/redist/jp/v44 tensorflow
+

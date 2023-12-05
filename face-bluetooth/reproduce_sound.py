@@ -8,7 +8,7 @@ import random
 
 
 global audio_playing
-
+"""
 def f_stop_sound():
     global audio_playing
     try:
@@ -19,7 +19,7 @@ def f_stop_sound():
 
 
 def f_check_sounds():
-    pass
+    pass"""
 
 def f_good(game_level):
 
@@ -297,25 +297,30 @@ def f_dif_movenet(number_of_track):
 ||
 """
 
-def play_audio(audio):
-    print("hola-------------------1")
-    play(audio)
-    print("hola-------------------2")
+def f_play_audio(audio_path):
+    pygame.mixer.init()
+    pygame.mixer.music.load(audio_path)
+    pygame.mixer.music.play()
 
+def f_stop_audio():
+    try:
+        pygame.mixer.music.stop()
+    except Exception as e:
+        print("excepcion audio controlada ", e)
 
-
+"""
 def f_play_audio_yoga(audio):
     global audio_playing
-    """print("hola-------------------1")
+    print("hola-------------------1")
     audio_playing = Process(target=play, args=(audio))
     audio_playing.start()
     audio_playing.join()
-    print("hola-------------------2")"""
+    print("hola-------------------2")
 
     audio_thread = Thread(target=play_audio, args=(audio,))
     audio_thread.start()
     audio_thread.join()
-
+"""
 
 def f_yoga(game_level):
     global audio_playing
@@ -327,18 +332,15 @@ def f_yoga(game_level):
     if game_level.split("_")[-1] == "facil":
         path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/yoga/YogaSesion1.mp3"
         #path_to_audio = os.path.expanduser('/home/catedra/Desktop/chocobot/chocobot/audios-estaticos/YogaSesion1.mp3')
-        audio = AudioSegment.from_file(path_to_audio)
-        f_play_audio_yoga(audio)
+        f_play_audio(path_to_audio)
 
     elif game_level.split("_")[-1] == "medio":
         path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/yoga/YogaSesion2.mp3"
-        audio = AudioSegment.from_file(path_to_audio)
-        f_play_audio_yoga(audio)
+        f_play_audio(path_to_audio)
 
     elif game_level.split("_")[-1] == "dificil":
         path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/yoga/YogaSesion3.mp3"
-        audio = AudioSegment.from_file(path_to_audio)
-        f_play_audio_yoga(audio)
+        f_play_audio(path_to_audio)
     
 
 

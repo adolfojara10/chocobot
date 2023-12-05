@@ -4,7 +4,7 @@ import threading
 #import pygame
 #pygame.init()
 import cv2
-#import simon_dice
+import simon_dice
 #import movenet
 import reproduce_sound
 import subprocess
@@ -25,6 +25,12 @@ def f_reset_video_capture():
     video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
     video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)
 
+
+def f_reset_vars():
+    
+    #simon_dice.f_reset_vars()
+    #movenet.f_reset_vars()
+    pass
 
 
 if __name__ == "__main__":
@@ -69,20 +75,6 @@ if __name__ == "__main__":
 
     time.sleep(10)
 
-    
-    # Define the command to list and kill processes using /dev/ttyTHS1
-    command = 'lsof /dev/ttyTHS1 | awk \'NR>1 {print $2}\' | xargs -I {} kill -9 {}'
-
-    # Execute the command using subprocess
-    try:
-        subprocess.run(command, shell=True, check=True)
-        print("Processes using /dev/ttyTHS1 have been terminated.")
-        sys.stdout.flush()
-    except subprocess.CalledProcessError:
-        print("Failed to terminate processes or no processes were found.")
-        sys.stdout.flush()
-
-    time.sleep(10)
 
     try:
         subprocess.run(["xhost", "+"], check=True)
@@ -92,12 +84,22 @@ if __name__ == "__main__":
 
     time.sleep(10)
     
-    
+    try:
+        sudoPassword = 'catedra'
+        command = 'sudo chmod 777 /dev/ttyACM0'
+        os.popen("sudo -S %s"%(command), 'w').write('catedra')
+
+        """command = "chmod -R 777 /dev -R"
+        subprocess.run(command, shell=True, check=True)"""
+    except subprocess.CalledProcessError as e:
+        print(f"Error executing command: {e}")
+
+    time.sleep(10)
     
     
             
     serial_reader.f_start_vars()
-    #simon_dice.f_reset_vars()
+    simon_dice.f_reset_vars()
     face_recognition_functions.f_load_saved_faces()
     face_recognition_functions.f_reset_variables()
     #movenet.f_load_model()
@@ -120,6 +122,20 @@ if __name__ == "__main__":
     # Play the audio
     #playsound(path_to_audio)    
 
+    # Define the command to list and kill processes using /dev/ttyTHS1
+    command = 'lsof /dev/ttyTHS1 | awk \'NR>1 {print $2}\' | xargs -I {} kill -9 {}'
+
+    # Execute the command using subprocess
+    try:
+        subprocess.run(command, shell=True, check=True)
+        print("Processes using /dev/ttyTHS1 have been terminated.")
+        sys.stdout.flush()
+    except subprocess.CalledProcessError:
+        print("Failed to terminate processes or no processes were found.")
+        sys.stdout.flush()
+
+    time.sleep(10)
+
     # Create a thread for serial communication
     serial_thread = threading.Thread(target=serial_reader.serial_reader)
 
@@ -127,9 +143,9 @@ if __name__ == "__main__":
     serial_thread.start()
     #serial_reader.f_send_data("hh")
 
-    """serial_port = "/dev/ttyACM0"
+    serial_port = "/dev/ttyACM0"
     baud_rate = 9600
-    serial_connection = serial.Serial(serial_port, baud_rate)"""
+    serial_connection = serial.Serial(serial_port, baud_rate)
 
     time.sleep(30)
 
@@ -229,8 +245,9 @@ if __name__ == "__main__":
                 cmd_send_arduino = serial_reader.received_data.split("_")[-1]
                 # enviar datos al arduino
 
-                # serial_connection.write(cmd_send_arduino.encode())
+                cmd_send_arduino += "\n"
 
+                serial_connection.write(cmd_send_arduino.encode())
                 
                 game_level_playing = "jugar_robot"
                 
@@ -395,7 +412,8 @@ if __name__ == "__main__":
             elif "cancelar" in serial_reader.received_data:
                 game_level_playing = ""
                 serial_reader.received_data = ""
-                reproduce_sound.f_stop_sound()
+                f_reset_vars()
+                reproduce_sound.f_stop_audio()
 
             else:
                 pass
