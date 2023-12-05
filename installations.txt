@@ -16,5 +16,5 @@ pyzbar:
 sudo python3 -m pip install pyzbar
 
 tensorflow (intentar):
-sudo pip3 install --pre --extra-index-url https://developer.download.nvidia.com/compute/redist/jp/v44 tensorflow
+
 
