@@ -397,4 +397,6 @@ if __name__ == "__main__":
             #delete_files()
             #serial_thread.join()
             break
-        cv2.imshow('Video', frame)"""
+        cv2.imshow('Video', frame)
+        
+"""

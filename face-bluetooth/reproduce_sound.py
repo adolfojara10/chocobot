@@ -33,7 +33,7 @@ def f_good(game_level):
         
         if game_level.split("_")[-1] == "facil":
             path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/good/Simon1.m4a"
-            audio = AudioSegment.from_wav(path_to_audio)
+            audio = AudioSegment.from_file(path_to_audio)
             play(audio)
 
         elif game_level.split("_")[-1] == "medio":
@@ -243,20 +243,24 @@ def f_simon_dice():
     play(audio)
 
 def f_easy_simon(number_of_track):
-    path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/simon/easy/"
-    path_to_audio = os.path.join(path_to_audio, f'{number_of_track}.mp3')
+    path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/Simon/Simon1"
+    path_to_audio += str(number_of_track+1)
+    path_to_audio += ".m4a"
+    #path_to_audio = os.path.join(path_to_audio, f'{number_of_track}.mp3')
     audio = AudioSegment.from_file(path_to_audio)
     play(audio)
 
 def f_med_simon(number_of_track):
-    path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/simon/med/"
-    path_to_audio = os.path.join(path_to_audio, f'{number_of_track}.mp3')
+    path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/Simon/Simon2"
+    path_to_audio += str(number_of_track+1)
+    path_to_audio += ".m4a"
     audio = AudioSegment.from_file(path_to_audio)
     play(audio)
 
 def f_dif_simon(number_of_track):
-    path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/simon/dif/"
-    path_to_audio = os.path.join(path_to_audio, f'{number_of_track}.mp3')
+    path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/Simon/Simon3"
+    path_to_audio += str(number_of_track+1)
+    path_to_audio += ".m4a"
     audio = AudioSegment.from_file(path_to_audio)
     play(audio)
 

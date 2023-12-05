@@ -100,7 +100,7 @@ if __name__ == "__main__":
 
     try:
         sudoPassword = 'catedra'
-        command = 'amixer -D pulse sset Master 100%'
+        command = 'amixer -D pulse sset Master 80%'
         os.popen("sudo -S %s"%(command), 'w').write('catedra')
 
         """command = "chmod -R 777 /dev -R"
@@ -157,13 +157,16 @@ if __name__ == "__main__":
     serial_thread.start()
     #serial_reader.f_send_data("hh")
 
-    """serial_port = "/dev/ttyACM0"
+    """
+    serial_port = "/dev/ttyACM0"
     baud_rate = 9600
     serial_connection = serial.Serial(serial_port, baud_rate)
-    serial_connection.write("i\n")
+    serial_connection.write("p\n".encode())
+    #time.sleep(5)
+    #serial_connection.write("i\n".encode())
     time.sleep(5)
-    serial_connection.write("4\n")
-    """
+    serial_connection.write("3\n".encode())"""
+    
 
     time.sleep(30)
 
@@ -232,7 +235,7 @@ if __name__ == "__main__":
                 elif received_data.split("_")[-1] == "dificil":
                     movenet.f_easy(frame)"""
 
-            print(serial_reader.received_data)            
+            #print(serial_reader.received_data)            
             
             if serial_reader.received_data == "leer_persona":
                 print("1")
@@ -266,7 +269,7 @@ if __name__ == "__main__":
                 if cmd_send_arduino == "v 0 0":
                     time.sleep(4)
                 elif cmd_send_arduino == "i":
-                    #serial_connection.write("p\n")
+                    #serial_connection.write("p\n".encode())
                     time.sleep(4)    
 
                 cmd_send_arduino += "\n"
@@ -312,17 +315,17 @@ if __name__ == "__main__":
 
             elif "simon_dice" in serial_reader.received_data:
                 game_level_playing = serial_reader.received_data
-                serial_reader.received_data = ""
+                #serial_reader.received_data = ""
 
-                """
+                
                 if serial_reader.received_data.split("_")[-1] == "facil":
                     simon_dice.f_easy(frame)
 
                 elif serial_reader.received_data.split("_")[-1] == "medio":
-                    simon_dice.f_easy(frame)
+                    simon_dice.f_medium(frame)
 
                 elif serial_reader.received_data.split("_")[-1] == "dificil":
-                    simon_dice.f_easy(frame)"""
+                    simon_dice.f_hard(frame)
                 
             elif "conciencia_corporal" in serial_reader.received_data:
                 game_level_playing = serial_reader.received_data
@@ -333,10 +336,10 @@ if __name__ == "__main__":
                     movenet.f_easy(frame)
 
                 elif game_level_playing.split("_")[-1] == "medio":
-                    movenet.f_easy(frame)
+                    movenet.f_medium(frame)
 
                 elif game_level_playing.split("_")[-1] == "dificil":
-                    movenet.f_easy(frame)
+                    movenet.f_hard(frame)
                 
             elif "yoga" in serial_reader.received_data:
                 game_level_playing = serial_reader.received_data
@@ -344,7 +347,7 @@ if __name__ == "__main__":
 
                 result = reproduce_sound.f_yoga(game_level_playing)
 
-                serial_reader.f_send_data("game_completed")
+                #serial_reader.f_send_data("game_completed")
 
                 
 
@@ -370,11 +373,17 @@ if __name__ == "__main__":
                 #audio_path = os.path.join(audio_dir, random_audio)
                 #audio = AudioSegment.from_file(audio_path)
                 #play(audio)
+
+                if "yoga" in game_level_playing:
+                    reproduce_sound.f_stop_audio()
+                    time.sleep(1)
                 
                 
 
                 reproduce_sound.f_good(game_level_playing)
                 #print(game_level_playing)
+
+                
 
 
 
@@ -451,16 +460,19 @@ if __name__ == "__main__":
                 
                 #serial_connection.write("p\n")
 
-                time.sleep(10)
+                time.sleep(5)
 
-                command = 'sudo shutdown -h now'
+                command = 'shutdown -h now'
 
                 # Execute the command using subprocess
                 try:
+
+                    os.popen("sudo -S %s"%(command), 'w').write('catedra')
+                    """
                     subprocess.run(command, shell=True, check=True)
-                    sys.stdout.flush()
+                    sys.stdout.flush()"""
                 except subprocess.CalledProcessError:
-                    print("Failed to terminate processes or no processes were found.")
+                    print("shutdown error")
                     sys.stdout.flush()
 
             else:
@@ -477,7 +489,7 @@ if __name__ == "__main__":
                 #serial_thread.join()
                 break
 
-            #cv2.imshow('Video', frame)
+            cv2.imshow('Video', frame)
 
         
 
