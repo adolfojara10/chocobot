@@ -273,20 +273,22 @@ def f_movenet():
 
 
 def f_easy_movenet(number_of_track):
-    path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/movenet/easy/"
-    path_to_audio = os.path.join(path_to_audio, f'{number_of_track}.mp3')
+    path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/movenet/Espejo1"
+    path_to_audio += str(number_of_track)
+    path_to_audio += ".m4a"
+    #path_to_audio = os.path.join(path_to_audio, f'{str(number_of_track)}.m4a')
     audio = AudioSegment.from_file(path_to_audio)
     play(audio)
 
 def f_med_movenet(number_of_track):
-    path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/movenet/med/"
-    path_to_audio = os.path.join(path_to_audio, f'{number_of_track}.mp3')
+    path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/movenet/Espejo2"
+    path_to_audio = os.path.join(path_to_audio, f'{number_of_track}.m4a')
     audio = AudioSegment.from_file(path_to_audio)
     play(audio)
 
 def f_dif_movenet(number_of_track):
-    path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/movenet/dif/"
-    path_to_audio = os.path.join(path_to_audio, f'{number_of_track}.mp3')
+    path_to_audio = "/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/movenet/Espejo3"
+    path_to_audio = os.path.join(path_to_audio, f'{number_of_track}.m4a')
     audio = AudioSegment.from_file(path_to_audio)
     play(audio)
 

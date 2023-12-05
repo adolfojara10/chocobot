@@ -52,23 +52,29 @@ def f_read(frame_received):
     
     global EDGES, interpreter
 
-    #img = tf.image.resize_with_pad(np.expand_dims(frame_received, axis=0), 256,256)
-    img = tf.image.resize_with_pad(np.expand_dims(frame_received, axis=0), 192,192)
-    input_image = tf.cast(img, dtype=tf.float32)
-    
-    # Setup input and output 
-    input_details = interpreter.get_input_details()
-    output_details = interpreter.get_output_details()
-    
-    # Make predictions 
-    interpreter.set_tensor(input_details[0]['index'], np.array(input_image))
-    interpreter.invoke()
-    keypoints_with_scores = interpreter.get_tensor(output_details[0]['index'])
+    if frame_received is None:
+        # Handle the case where frame_received is None
+        print("Received a None frame.")
+    else:
+            
 
-    y, x, c = frame_received.shape
-    shaped = np.squeeze(np.multiply(keypoints_with_scores, [y,x,1]))
+        #img = tf.image.resize_with_pad(np.expand_dims(frame_received, axis=0), 256,256)
+        img = tf.image.resize_with_pad(np.expand_dims(frame_received, axis=0), 192,192)
+        input_image = tf.cast(img, dtype=tf.float32)
+        
+        # Setup input and output 
+        input_details = interpreter.get_input_details()
+        output_details = interpreter.get_output_details()
+        
+        # Make predictions 
+        interpreter.set_tensor(input_details[0]['index'], np.array(input_image))
+        interpreter.invoke()
+        keypoints_with_scores = interpreter.get_tensor(output_details[0]['index'])
 
-    return shaped
+        y, x, c = frame_received.shape
+        shaped = np.squeeze(np.multiply(keypoints_with_scores, [y,x,1]))
+
+        return shaped
 
 
 def f_easy(frame_received, confidence_threshold=0.4):
@@ -79,12 +85,13 @@ def f_easy(frame_received, confidence_threshold=0.4):
     keypoints = f_read(frame_received)
     draw_keypoints(frame_received, keypoints, 0.4)
     
+    print(str(step))
 
     if step == 0:
         if not is_command_sounded:
             #reproducir sonido
-            reproduce_sound.f_movenet()
-            reproduce_sound.f_easy_movenet(step)
+            #reproduce_sound.f_movenet()
+            reproduce_sound.f_easy_movenet(step+1)
             is_command_sounded = True
 
         print("0")
@@ -99,7 +106,7 @@ def f_easy(frame_received, confidence_threshold=0.4):
         print("1")
         if not is_command_sounded:
             #reproducir sonido
-            reproduce_sound.f_easy_movenet(step)
+            reproduce_sound.f_easy_movenet(step+1)
             is_command_sounded = True
 
         if (abs(keypoints[9][0] - keypoints[8][0]) < 10 and (keypoints[9][2] > (confidence_threshold - 0.1) and keypoints[8][2] > (confidence_threshold - 0.1))) or (abs(keypoints[10][0] - keypoints[7][0]) < 10 and (keypoints[10][2] > (confidence_threshold - 0.1) and keypoints[7][2] > (confidence_threshold - 0.1))):
@@ -111,7 +118,7 @@ def f_easy(frame_received, confidence_threshold=0.4):
         
         if not is_command_sounded:
             #reproducir sonido
-            reproduce_sound.f_easy_movenet(step)
+            reproduce_sound.f_easy_movenet(step+1)
             print("hola")
             left_foot = None
             is_command_sounded = True
@@ -135,6 +142,8 @@ def f_easy(frame_received, confidence_threshold=0.4):
                 print("yes33333")
                 step +=1
                 is_command_sounded = False
+                f_reset_vars()
+                f_send_data("1")
         except:
             pass
             #print("exception")
@@ -142,10 +151,10 @@ def f_easy(frame_received, confidence_threshold=0.4):
             #right_foot = keypoints[16]
 
     
-    elif step == 3:
+    """elif step == 3:
         if not is_command_sounded:
             #reproducir sonido
-            reproduce_sound.f_easy_movenet(step)
+            reproduce_sound.f_easy_movenet(step+1)
             is_command_sounded = True
 
         print(abs(keypoints[9][1] - keypoints[10][1]))
@@ -159,7 +168,7 @@ def f_easy(frame_received, confidence_threshold=0.4):
             is_command_sounded = False
             f_reset_vars()
             ##### terminar el juego: enviar señal a la tablet que el juegop ya se acabo y cambiar la variable que recibe la señal de la tablet a ""
-            f_send_data("1")
+            f_send_data("1")"""
 
 
         
@@ -175,7 +184,7 @@ def f_medium(frame_received, confidence_threshold=0.4):
         if not is_command_sounded:
             #reproducir sonido
             reproduce_sound.f_movenet()
-            reproduce_sound.f_med_movenet(step)
+            reproduce_sound.f_med_movenet(step+1)
             print("hola")
             left_foot = None
             is_command_sounded = True
@@ -218,7 +227,7 @@ def f_medium(frame_received, confidence_threshold=0.4):
 
         if not is_command_sounded:
             #reproducir sonido
-            reproduce_sound.f_med_movenet(step)
+            reproduce_sound.f_med_movenet(step+1)
             is_command_sounded = True
 
         #if (keypoints[0][2] >= confidence_threshold and keypoints[10][2] >= confidence_threshold):
@@ -233,7 +242,7 @@ def f_medium(frame_received, confidence_threshold=0.4):
         
         if not is_command_sounded:
             #reproducir sonido
-            reproduce_sound.f_med_movenet(step)
+            reproduce_sound.f_med_movenet(step+1)
             is_command_sounded = True
 
         try:
@@ -285,7 +294,7 @@ def f_hard(frame_received, confidence_threshold=0.4):
         if not is_command_sounded:
             #reproducir sonido
             reproduce_sound.f_movenet()
-            reproduce_sound.f_dif_movenet(step)
+            reproduce_sound.f_dif_movenet(step+1)
             is_command_sounded = True
 
 
@@ -316,7 +325,7 @@ def f_hard(frame_received, confidence_threshold=0.4):
     elif step == 1:
         if not is_command_sounded:
             #reproducir sonido
-            reproduce_sound.f_dif_movenet(step)
+            reproduce_sound.f_dif_movenet(step+1)
             is_command_sounded = True
 
         if ((abs(keypoints[14][0] - keypoints[9][0]) < 45 and abs(keypoints[14][1] - keypoints[9][1]) < 45) or (abs(keypoints[14][0] - keypoints[10][0]) < 30 and abs(keypoints[14][1] - keypoints[10][1]) < 30)) and (keypoints[14][2] > confidence_threshold and (keypoints[9][2] > confidence_threshold or keypoints[10][2] > confidence_threshold)):
@@ -327,7 +336,7 @@ def f_hard(frame_received, confidence_threshold=0.4):
     elif step == 2:
         if not is_command_sounded:
             #reproducir sonido
-            reproduce_sound.f_dif_movenet(step)
+            reproduce_sound.f_dif_movenet(step+1)
             is_command_sounded = True
 
         #print(abs(keypoints[1][0] - keypoints[10][0]), " ******************* ", )
@@ -358,3 +367,34 @@ def draw_keypoints(frame, keypoints, confidence_threshold):
             cv2.putText(frame, str(i), (int(kx), int(ky)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
         i+=1
         #print(i)
+
+
+"""
+if __name__ == "__main__":
+
+
+    f_reset_vars()
+    f_load_model()
+
+    video_capture = cv2.VideoCapture(0, cv2.CAP_V4L2)
+    #video_capture = cv2.VideoCapture(0)
+    video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
+    video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)
+    i = 0
+
+    
+
+    while True:
+        ret, frame = video_capture.read()
+        f_easy(frame)
+        key = cv2.waitKey(1) & 0xFF
+
+        # Hit 'q' on the keyboard to quit!
+        if key == ord('q'):
+                # Release handle to the webcam
+            video_capture.release()
+            cv2.destroyAllWindows()
+            #delete_files()
+            #serial_thread.join()
+            break
+        cv2.imshow('Video', frame)"""

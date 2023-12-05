@@ -326,17 +326,17 @@ if __name__ == "__main__":
                 
             elif "conciencia_corporal" in serial_reader.received_data:
                 game_level_playing = serial_reader.received_data
-                serial_reader.received_data = ""
+                #serial_reader.received_data = ""
 
-                """
-                if serial_reader.received_data.split("_")[-1] == "facil":
+                print(serial_reader.received_data)
+                if game_level_playing.split("_")[-1] == "facil":
                     movenet.f_easy(frame)
 
-                elif serial_reader.received_data.split("_")[-1] == "medio":
+                elif game_level_playing.split("_")[-1] == "medio":
                     movenet.f_easy(frame)
 
-                elif serial_reader.received_data.split("_")[-1] == "dificil":
-                    movenet.f_easy(frame)"""
+                elif game_level_playing.split("_")[-1] == "dificil":
+                    movenet.f_easy(frame)
                 
             elif "yoga" in serial_reader.received_data:
                 game_level_playing = serial_reader.received_data
