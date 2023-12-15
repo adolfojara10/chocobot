@@ -75,6 +75,16 @@ if __name__ == "__main__":
         sys.stdout.flush()
 
     time.sleep(10)
+
+    
+
+    try:
+        
+        command = "pacmd set-default-sink alsa_output.usb-Jieli_Technology_UACDemoV1.0_1120030506060425-00.analog-stereo"
+        os.popen("sudo -S %s"%(command), 'w').write('catedra')
+        print("Command executed successfully.")
+    except subprocess.CalledProcessError as e:
+        print(f"Error executing the command: {e}")
     
     try:
         
@@ -92,7 +102,7 @@ if __name__ == "__main__":
 
     try:
         sudoPassword = 'catedra'
-        command = 'amixer -D pulse sset Master 80%'
+        command = 'amixer -D pulse sset Master 100%'
         os.popen("sudo -S %s"%(command), 'w').write('catedra')
 
         """command = "chmod -R 777 /dev -R"

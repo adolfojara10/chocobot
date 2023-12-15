@@ -6,7 +6,7 @@ from serial_reader import f_send_data
 import reproduce_sound
 
 global EDGES
-global step, is_command_sounded, left_foot, right_foot, i_clap, is_game_finished, right_hand,interpreter
+global step, is_command_sounded, left_foot, right_foot, i_clap, is_game_finished, right_hand,interpreter, frame
 interpreter = None
 
 EDGES = {
@@ -77,13 +77,16 @@ def f_read(frame_received):
         return shaped
 
 
-def f_easy(frame_received, confidence_threshold=0.4):
+def f_easy(frame_received, confidence_threshold=0.1):
     global step, is_command_sounded, left_foot, right_foot, i_clap, is_game_finished
     #two_d_array = np.array(keypoints).reshape(-1, keypoints.shape[-1])
     #step = 3
+    y, x, c = frame_received.shape
+    keypoints_with_scores = f_read(frame_received)
 
-    keypoints = f_read(frame_received)
-    draw_keypoints(frame_received, keypoints, 0.4)
+    keypoints = np.squeeze(np.multiply(keypoints_with_scores, [y,x,1]))
+    #draw_connections(keypoints_with_scores, EDGES, 0.4)
+    #draw_keypoints(keypoints_with_scores, 0.4)
     
     print(str(step))
 
@@ -109,7 +112,7 @@ def f_easy(frame_received, confidence_threshold=0.4):
             reproduce_sound.f_easy_movenet(step+1)
             is_command_sounded = True
 
-        if (abs(keypoints[9][0] - keypoints[8][0]) < 10 and (keypoints[9][2] > (confidence_threshold - 0.1) and keypoints[8][2] > (confidence_threshold - 0.1))) or (abs(keypoints[10][0] - keypoints[7][0]) < 10 and (keypoints[10][2] > (confidence_threshold - 0.1) and keypoints[7][2] > (confidence_threshold - 0.1))):
+        if ((abs(keypoints[9][0] - keypoints[8][0]) < 20 or abs(keypoints[9][1] - keypoints[8][1]) < 20 or abs(keypoints[7][0] - keypoints[9][0]) < 20) and (keypoints[9][2] >= confidence_threshold or keypoints[8][2] > confidence_threshold or keypoints[7][2] > confidence_threshold)) or ((abs(keypoints[10][0] - keypoints[7][0]) < 20 or abs(keypoints[10][1] - keypoints[7][1]) < 20 or abs(keypoints[10][0] - keypoints[8][0]) < 20) and (keypoints[10][2] >= confidence_threshold or keypoints[7][2] >= confidence_threshold or keypoints[8][2] >= confidence_threshold)):
             print("yesss2222")
             step+=1
             is_command_sounded = False
@@ -120,6 +123,7 @@ def f_easy(frame_received, confidence_threshold=0.4):
             #reproducir sonido
             reproduce_sound.f_easy_movenet(step+1)
             print("hola")
+            time.sleep(3)
             left_foot = None
             is_command_sounded = True
             #left_foot = keypoints[15]
@@ -127,7 +131,7 @@ def f_easy(frame_received, confidence_threshold=0.4):
         
         try:
             if left_foot == None:
-                if keypoints[15][2] > confidence_threshold and keypoints[16][2] > confidence_threshold:
+                if keypoints[15][2] > confidence_threshold+0.2 and keypoints[16][2] > confidence_threshold:
                     left_foot = keypoints[15]
                     right_foot = keypoints[16]
         except:
@@ -138,7 +142,7 @@ def f_easy(frame_received, confidence_threshold=0.4):
         try:
             #print(left_foot[0] - keypoints[15][0], "    ---------------------------      ", right_foot[0] - keypoints[16][0])
             #print(left_foot[0], " --------- ", keypoints[15][0], "    --------------      ", right_foot[0], " ---------------- ", keypoints[16][0], " ++++++++ ", keypoints[15][2], " ++++ ", keypoints[16][2])
-            if (abs(left_foot[0] - keypoints[15][0]) > 30 or right_foot[0] - keypoints[16][0] > 30) and (keypoints[15][2] > confidence_threshold and keypoints[16][2] > confidence_threshold):
+            if (abs(left_foot[0] - keypoints[15][0]) > 30 or right_foot[0] - keypoints[16][0] > 30) and (keypoints[15][2] > confidence_threshold+0.2 and keypoints[16][2] > confidence_threshold+0.2):
                 print("yes33333")
                 step +=1
                 is_command_sounded = False
@@ -170,20 +174,25 @@ def f_easy(frame_received, confidence_threshold=0.4):
             ##### terminar el juego: enviar señal a la tablet que el juegop ya se acabo y cambiar la variable que recibe la señal de la tablet a ""
             f_send_data("1")"""
 
+    #return keypoints
+
 
         
 
-def f_medium(frame_received, confidence_threshold=0.4):
+def f_medium(frame_received, confidence_threshold=0.1):
     global step, is_command_sounded, left_foot, right_foot, i_clap, is_game_finished
 
     #step = 2
 
-    keypoints = f_read(frame_received)
+    y, x, c = frame_received.shape
+    keypoints_with_scores = f_read(frame_received)
+
+    keypoints = np.squeeze(np.multiply(keypoints_with_scores, [y,x,1]))
 
     if step == 0:
         if not is_command_sounded:
             #reproducir sonido
-            reproduce_sound.f_movenet()
+            #reproduce_sound.f_movenet()
             reproduce_sound.f_med_movenet(step+1)
             print("hola")
             left_foot = None
@@ -233,7 +242,7 @@ def f_medium(frame_received, confidence_threshold=0.4):
         #if (keypoints[0][2] >= confidence_threshold and keypoints[10][2] >= confidence_threshold):
         #    print(abs(keypoints[0][1] - keypoints[10][1]), "****************** ", abs(keypoints[0][0] - keypoints[10][0]))
 
-        if (abs(keypoints[0][1] - keypoints[10][1]) < 71 and abs(keypoints[0][0] - keypoints[10][0]) < 82) and (keypoints[0][2] >= confidence_threshold and keypoints[10][2] >= confidence_threshold):
+        if (abs(keypoints[0][1] - keypoints[10][1]) < 71 or abs(keypoints[0][0] - keypoints[10][0]) < 82) and (keypoints[0][2] >= confidence_threshold and keypoints[10][2] >= confidence_threshold):
             print("yesss222")
             step+=1
             is_command_sounded = False
@@ -352,9 +361,23 @@ def f_hard(frame_received, confidence_threshold=0.4):
 
 
 
-       
+def draw_connections(keypoints, edges, confidence_threshold):
+    global frame
 
-def draw_keypoints(frame, keypoints, confidence_threshold):
+    y, x, c = frame.shape
+    shaped = np.squeeze(np.multiply(keypoints, [y,x,1]))
+    
+    for edge, color in edges.items():
+        p1, p2 = edge
+        y1, x1, c1 = shaped[p1]
+        y2, x2, c2 = shaped[p2]
+        
+        if (c1 > confidence_threshold) & (c2 > confidence_threshold):      
+            cv2.line(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0,0,255), 2)    
+
+def draw_keypoints(keypoints, confidence_threshold):
+    global frame
+
     y, x, c = frame.shape
     shaped = np.squeeze(np.multiply(keypoints, [y,x,1]))
     
@@ -365,11 +388,15 @@ def draw_keypoints(frame, keypoints, confidence_threshold):
         if kp_conf > confidence_threshold:
             cv2.circle(frame, (int(kx), int(ky)), 4, (0,255,0), -1) 
             cv2.putText(frame, str(i), (int(kx), int(ky)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+            print("hola")
         i+=1
+    
         #print(i)
 
+    #cv2.imshow('Video', frame)
 
-"""
+
+
 if __name__ == "__main__":
 
 
@@ -386,7 +413,8 @@ if __name__ == "__main__":
 
     while True:
         ret, frame = video_capture.read()
-        f_easy(frame)
+        #keypo = f_easy(frame)
+        f_medium(frame)
         key = cv2.waitKey(1) & 0xFF
 
         # Hit 'q' on the keyboard to quit!
@@ -397,6 +425,6 @@ if __name__ == "__main__":
             #delete_files()
             #serial_thread.join()
             break
+        
         cv2.imshow('Video', frame)
         
-"""
