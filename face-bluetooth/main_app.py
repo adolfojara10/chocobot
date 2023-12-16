@@ -39,7 +39,7 @@ if __name__ == "__main__":
     game_level_playing = ""
     i_camera=0
     i_test_bluetooth = 0
-
+    
     """
     try:
         # Run the pulseaudio command as root
@@ -174,6 +174,8 @@ if __name__ == "__main__":
     #serial_connection.write("i\n".encode())
     time.sleep(5)
     serial_connection.write("3\n".encode())
+
+    serial_reader.f_send_data("cargando")
     
 
     time.sleep(30)
@@ -196,6 +198,7 @@ if __name__ == "__main__":
             sys.stdout.flush()
             f_reset_video_capture()
             i_camera+=1
+            serial_reader.f_send_data("cargando camara")
             if i_camera>750:
                 command = 'reboot'
 
@@ -214,6 +217,7 @@ if __name__ == "__main__":
         else:
 
             if i == 0:
+                serial_reader.f_send_data("Camara lista")
                 print("cargando")
                 sys.stdout.flush()
                 face_recognition_functions.f_read_person_once(frame_received=frame)
@@ -309,9 +313,9 @@ if __name__ == "__main__":
                     
                     i_test_bluetooth+=1
                     if i_test_bluetooth<=1:
-                        serial_reader.f_send_data("Cargando")
+                        serial_reader.f_send_data("Cargando Bluetooth")
                     else:
-                        serial_reader.f_send_data("Listo")
+                        serial_reader.f_send_data("Listo! Ya puedes empezar")
                         reproduce_sound.f_test_serial()
 
                 serial_reader.received_data = ""
