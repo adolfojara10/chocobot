@@ -46,7 +46,8 @@ def serial_reader():
 
             print("hola serial")
 
-            f_send_data("hh")
+            if max_retries > 0:
+                f_send_data("Bluetooth activado")
 
             while True:
                 data = rl.readline()

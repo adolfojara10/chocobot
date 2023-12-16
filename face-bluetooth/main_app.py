@@ -177,7 +177,7 @@ if __name__ == "__main__":
     
     #serial_connection.write("3\n".encode())
 
-    serial_reader.f_send_data("cargando")
+    serial_reader.f_send_data("Cargando camara")
     
 
     time.sleep(30)
@@ -191,6 +191,11 @@ if __name__ == "__main__":
 
     while True:
         ret, frame = video_capture.read()
+        """
+        try:
+            frame = cv2.flip(frame, 0)
+        except Exception as e:
+            print(e)"""
 
         #print("camaraaaa")
         #sys.stdout.flush()
@@ -200,7 +205,7 @@ if __name__ == "__main__":
             sys.stdout.flush()
             f_reset_video_capture()
             i_camera+=1
-            serial_reader.f_send_data("cargando camara")
+            serial_reader.f_send_data("Cargando camara")
             if i_camera>750:
                 command = 'reboot'
 
@@ -296,6 +301,7 @@ if __name__ == "__main__":
             elif "saludar" in serial_reader.received_data:
                 reproduce_sound.f_welcome()
                 serial_connection.write("1\n".encode())
+                serial_reader.received_data = ""
 
             elif "jugar_robot" in serial_reader.received_data:
                 cmd_send_arduino = serial_reader.received_data.split("_")[-1]
@@ -377,6 +383,8 @@ if __name__ == "__main__":
             elif "conciencia_corporal" in serial_reader.received_data:
                 game_level_playing = serial_reader.received_data
                 #serial_reader.received_data = ""
+
+                #frame = cv2.(flip)(frame, 1)
 
                 print(serial_reader.received_data)
                 if game_level_playing.split("_")[-1] == "facil":
@@ -511,6 +519,7 @@ if __name__ == "__main__":
                 #serial_connection.write("p\n".encode())
 
                 #time.sleep(5)
+                serial_reader.received_data = ""
 
                 command = 'reboot -h now'
 
@@ -529,8 +538,8 @@ if __name__ == "__main__":
             elif "apagar" in serial_reader.received_data:
                 
                 serial_connection.write("4\n".encode())
-
-                time.sleep(40)
+                serial_reader.received_data = ""
+                time.sleep(30)
 
                 command = 'shutdown -h now'
 

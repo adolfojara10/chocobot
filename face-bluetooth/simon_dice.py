@@ -27,6 +27,7 @@ def f_easy(frame_received):
             is_command_sounded = True
 
         qr_code = f_read_qr(frame_received)
+        print(qr_code)
         if qr_code == "Aa":
             i+=1
             #i+=4
@@ -331,7 +332,7 @@ def f_reproduce_final_sound():
 def f_read_qr(frame_received):
     # Decode QR code(s) from the frame
     decoded_objects = decode(frame_received)
-
+    print(decoded_objects)
     # Check if a QR code was found and extract the data
     for obj in decoded_objects:
         qr_code_data = obj.data.decode('utf-8')
@@ -358,7 +359,10 @@ if __name__ == "__main__":
 
     while True:
         ret, frame = video_capture.read()
-        f_hard(frame)
+        frame2 = cv2.flip(frame, 0)
+        frame2 = cv2.flip(frame2, 1)
+        #f_easy(frame)
+        f_hard(frame2)
         key = cv2.waitKey(1) & 0xFF
 
         # Hit 'q' on the keyboard to quit!

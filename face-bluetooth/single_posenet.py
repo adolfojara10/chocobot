@@ -1,7 +1,8 @@
 from tracemalloc import start
+#import cv2
 from jetson_inference import poseNet
-from jetson_utils import videoSource, videoOutput, Log
-import jetson.utils
+from jetson_utils import videoSource, videoOutput, Log, cudaFromNumpy
+#import jetson.utils
 import serial_reader
 import reproduce_sound
 import time
@@ -31,7 +32,7 @@ def f_detect(frame):
 
 
     # perform pose estimation (with overlay) - Replace with your pose estimation logic
-    return net.Process(jetson.utils.cudaFromNumpy(frame), overlay="links,keypoints")
+    return net.Process(cudaFromNumpy(frame), overlay="links,keypoints")
     #return net.Process(frame, overlay="links,keypoints")
 
 
@@ -436,8 +437,36 @@ def f_hard(frame_received, confidence_threshold=0.4):
                     f_reset_vars()
                     serial_reader.received_data = ""
 
+"""
+if __name__ == "__main__":
+    f_load_model()
+    f_reset_vars()
 
+    video_capture = cv2.VideoCapture(0, cv2.CAP_V4L2)
+    #video_capture = cv2.VideoCapture(0)
+    video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
+    video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)
+    #i = 0
 
+    
+
+    while True:
+        ret, frame = video_capture.read()
+        frame2 = cv2.flip(frame, 0)
+        frame2 = cv2.flip(frame2, 1)
+        #f_easy(frame)
+        f_medium(frame2)
+        key = cv2.waitKey(1) & 0xFF
+
+        # Hit 'q' on the keyboard to quit!
+        if key == ord('q'):
+                # Release handle to the webcam
+            video_capture.release()
+            cv2.destroyAllWindows()
+            #delete_files()
+            #serial_thread.join()
+            break
+        cv2.imshow('Video', frame)"""
 """
 if __name__ == "__main__":
     f_load_model()
@@ -488,4 +517,3 @@ if __name__ == "__main__":
             break
 
 """
-
