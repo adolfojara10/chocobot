@@ -169,11 +169,13 @@ if __name__ == "__main__":
     serial_port = "/dev/ttyACM0"
     baud_rate = 9600
     serial_connection = serial.Serial(serial_port, baud_rate)
-    serial_connection.write("p\n".encode())
+    
+    #serial_connection.setDTR(0)
+    time.sleep(5)
     #time.sleep(5)
     #serial_connection.write("i\n".encode())
-    time.sleep(5)
-    serial_connection.write("3\n".encode())
+    
+    #serial_connection.write("3\n".encode())
 
     serial_reader.f_send_data("cargando")
     
@@ -218,6 +220,7 @@ if __name__ == "__main__":
 
             if i == 0:
                 serial_reader.f_send_data("Camara lista")
+                time.sleep(2)
                 print("cargando")
                 sys.stdout.flush()
                 face_recognition_functions.f_read_person_once(frame_received=frame)
@@ -266,8 +269,8 @@ if __name__ == "__main__":
             #print(serial_reader.received_data)            
             
             if serial_reader.received_data == "leer_persona":
-                print("1")
-                sys.stdout.flush()
+                #print("1")
+                #sys.stdout.flush()
 
                 face_recognition_functions.f_read_person(frame)
                 #if face_recognition_functions.name_person != "Unknown" and face_recognition_functions.name_person != "":
@@ -275,6 +278,7 @@ if __name__ == "__main__":
                     reproduce_sound.f_welcome()
                     serial_reader.f_send_data(str(face_recognition_functions.id_person_recognized))
                     serial_reader.received_data = ""
+                    serial_connection.write("1\n".encode())
 
                     face_recognition_functions.f_reset_variables()
 
@@ -289,33 +293,42 @@ if __name__ == "__main__":
                     # enviar que la persona no existe y crear el canvas en la tablet
 
 
+            elif "saludar" in serial_reader.received_data:
+                reproduce_sound.f_welcome()
+                serial_connection.write("1\n".encode())
 
             elif "jugar_robot" in serial_reader.received_data:
                 cmd_send_arduino = serial_reader.received_data.split("_")[-1]
                 # enviar datos al arduino
 
-                if cmd_send_arduino == "v 0 0":
-                    time.sleep(4)
-                elif cmd_send_arduino == "i":
-                    serial_connection.write("p\n".encode())
-                    time.sleep(4)    
+                try:
 
-                cmd_send_arduino += "\n"
+                    """if cmd_send_arduino == "v 0 0":
+                        time.sleep(2)
+                    elif cmd_send_arduino == "i":
+                        serial_connection.write("p\n".encode())
+                        time.sleep(2)    """
 
-                serial_connection.write(cmd_send_arduino.encode())
-                
-                game_level_playing = "jugar_robot"
+                    cmd_send_arduino += "\n"
+                    serial_connection.write(cmd_send_arduino.encode())
+                    time.sleep(2)
+                    #serial_reader.f_send_data(cmd_send_arduino)
+                    
+                    #game_level_playing = "jugar_robot"
+                except Exception as e:
+                    print (e)
 
             
-            elif "test_serial" in serial_reader.received_data:
+            elif "serial" in serial_reader.received_data:
                 
                 if "2" in serial_reader.received_data:
                     
                     i_test_bluetooth+=1
                     if i_test_bluetooth<=1:
                         serial_reader.f_send_data("Cargando Bluetooth")
+                        time.sleep(2)
                     else:
-                        serial_reader.f_send_data("Listo! Ya puedes empezar")
+                        serial_reader.f_send_data("Listo! Empieza")
                         reproduce_sound.f_test_serial()
 
                 serial_reader.received_data = ""
@@ -408,6 +421,8 @@ if __name__ == "__main__":
                 #audio = AudioSegment.from_file(audio_path)
                 #play(audio)
 
+                serial_connection.write("2\n".encode())
+
                 if "yoga" in game_level_playing:
                     reproduce_sound.f_stop_audio()
                     time.sleep(1)
@@ -440,6 +455,8 @@ if __name__ == "__main__":
                 #play(audio)
 
                 #reproduce_sound.f_bad()
+
+                serial_connection.write("3\n".encode())
 
                 reproduce_sound.f_bad2()
                 
@@ -490,11 +507,30 @@ if __name__ == "__main__":
                 f_reset_vars()
                 reproduce_sound.f_stop_audio()
 
+            elif "reset" in serial_reader.received_data:
+                #serial_connection.write("p\n".encode())
+
+                #time.sleep(5)
+
+                command = 'reboot -h now'
+
+                # Execute the command using subprocess
+                try:
+
+                    os.popen("sudo -S %s"%(command), 'w').write('catedra')
+                    """
+                    subprocess.run(command, shell=True, check=True)
+                    sys.stdout.flush()"""
+                except subprocess.CalledProcessError:
+                    print("shutdown error")
+                    sys.stdout.flush()
+
+
             elif "apagar" in serial_reader.received_data:
                 
-                serial_connection.write("p\n".encode())
+                serial_connection.write("4\n".encode())
 
-                time.sleep(5)
+                time.sleep(40)
 
                 command = 'shutdown -h now'
 

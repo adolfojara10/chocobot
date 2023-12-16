@@ -72,6 +72,10 @@ def f_send_data(data_send):
 
     #ser.flushInput() #This gives the bluetooth a little kick
 
-    ser.write(str.encode(data_send))
+    try:
+        ser.write(str.encode(data_send))
 
-    print("Done")
+        print("Done")
+    except Exception as e:
+        print("no se envian datos")
+        print(e)
