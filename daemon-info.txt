@@ -1,6 +1,6 @@
 # check service in live outputs
 journalctl -fu chocobot.service
-sudo journalctl -u your-service-name.service
+sudo journalctl -u trial3.service
 
 # restart service
 sudo systemctl daemon-reload
