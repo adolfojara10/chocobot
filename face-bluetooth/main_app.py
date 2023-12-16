@@ -5,7 +5,8 @@ import threading
 #pygame.init()
 import cv2
 import simon_dice
-import movenet
+#import movenet
+import single_posenet
 import reproduce_sound
 import subprocess
 from pydub import AudioSegment
@@ -30,11 +31,14 @@ def f_reset_video_capture():
 def f_reset_vars():
     
     simon_dice.f_reset_vars()
-    movenet.f_reset_vars()
+    #movenet.f_reset_vars()
+    single_posenet.f_reset_vars()
 
 
 if __name__ == "__main__":
     game_level_playing = ""
+    i_camera=0
+    i_test_bluetooth = 0
 
     """
     try:
@@ -118,8 +122,10 @@ if __name__ == "__main__":
     simon_dice.f_reset_vars()
     face_recognition_functions.f_load_saved_faces()
     face_recognition_functions.f_reset_variables()
-    movenet.f_load_model()
-    movenet.f_reset_vars()
+    single_posenet.f_load_model()
+    single_posenet.f_reset_vars()
+    #movenet.f_load_model()
+    #movenet.f_reset_vars()
     #reproduce_sound.f_good("simon_dice_facil")
     #received_data = ""
     #received_data = "13 Adolfo Jara"
@@ -189,6 +195,21 @@ if __name__ == "__main__":
             print("no sirve camara")
             sys.stdout.flush()
             f_reset_video_capture()
+            i_camera+=1
+            if i_camera>750:
+                command = 'reboot'
+
+                # Execute the command using subprocess
+                try:
+
+                    os.popen("sudo -S %s"%(command), 'w').write('catedra')
+                    """
+                    subprocess.run(command, shell=True, check=True)
+                    sys.stdout.flush()"""
+                except subprocess.CalledProcessError:
+                    print("shutdown error")
+                    sys.stdout.flush()
+
 
         else:
 
@@ -198,6 +219,7 @@ if __name__ == "__main__":
                 face_recognition_functions.f_read_person_once(frame_received=frame)
                 i+=1
                 print("cargado")
+                serial_reader.f_send_data("Activar Bluetooth")
                 sys.stdout.flush()
                 time.sleep(4)
                 #reproduce_sound.f_good("yoga_facil")
@@ -284,7 +306,13 @@ if __name__ == "__main__":
             elif "test_serial" in serial_reader.received_data:
                 
                 if "2" in serial_reader.received_data:
-                    reproduce_sound.f_test_serial()
+                    
+                    i_test_bluetooth+=1
+                    if i_test_bluetooth<=1:
+                        serial_reader.f_send_data("Cargando")
+                    else:
+                        serial_reader.f_send_data("Listo")
+                        reproduce_sound.f_test_serial()
 
                 serial_reader.received_data = ""
                 
@@ -335,13 +363,13 @@ if __name__ == "__main__":
 
                 print(serial_reader.received_data)
                 if game_level_playing.split("_")[-1] == "facil":
-                    movenet.f_easy(frame)
+                    single_posenet.f_easy(frame)
 
                 elif game_level_playing.split("_")[-1] == "medio":
-                    movenet.f_medium(frame)
+                    single_posenet.f_medium(frame)
 
                 elif game_level_playing.split("_")[-1] == "dificil":
-                    movenet.f_hard(frame)
+                    single_posenet.f_hard(frame)
                 
             elif "yoga" in serial_reader.received_data:
                 game_level_playing = serial_reader.received_data

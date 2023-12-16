@@ -4,7 +4,8 @@ sudo journalctl -u your-service-name.service
 
 # restart service
 sudo systemctl daemon-reload
-sudo systemctl restart chocobot.service
+sudo systemctl stop trial3.service
+sudo systemctl restart trial3.service
 
 # editar .service
 sudo vi /etc/systemd/system/chocobot.service

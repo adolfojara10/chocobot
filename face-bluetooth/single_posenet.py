@@ -1,13 +1,15 @@
+from tracemalloc import start
 from jetson_inference import poseNet
 from jetson_utils import videoSource, videoOutput, Log
-from serial_reader import f_send_data
+import jetson.utils
+import serial_reader
 import reproduce_sound
 import time
 
-global net, step, is_command_sounded, left_foot, right_foot, i_clap, is_game_finished, right_hand
+global net, step, is_command_sounded, left_foot, right_foot, i_clap, is_game_finished, right_hand, start_time, end_time
 
 def f_reset_vars():
-    global step, is_command_sounded, left_foot, right_foot, i_clap, is_game_finished, right_hand
+    global step, is_command_sounded, left_foot, right_foot, i_clap, is_game_finished, right_hand, start_time, end_time
 
     i_clap = 0
     step = 0
@@ -15,6 +17,8 @@ def f_reset_vars():
     left_foot = None
     right_hand = None
     is_game_finished = False
+    start_time = 0
+    end_time = 0
 
 
 def f_load_model():
@@ -25,12 +29,14 @@ def f_load_model():
 
 def f_detect(frame):
 
+
     # perform pose estimation (with overlay) - Replace with your pose estimation logic
-    return net.Process(frame, overlay="links,keypoints")
+    return net.Process(jetson.utils.cudaFromNumpy(frame), overlay="links,keypoints")
+    #return net.Process(frame, overlay="links,keypoints")
 
 
 def f_easy(frame_received, confidence_threshold=0.1):
-    global step, is_command_sounded, left_foot, right_foot, i_clap, is_game_finished
+    global step, is_command_sounded, left_foot, right_foot, i_clap, is_game_finished, start_time, end_time
 
     poses = f_detect(frame_received)
 
@@ -45,6 +51,7 @@ def f_easy(frame_received, confidence_threshold=0.1):
                 #reproduce_sound.f_movenet()
                 reproduce_sound.f_easy_movenet(step+1)
                 is_command_sounded = True
+                start_time = time.time()
 
             print("0")
             left_wrist_idx = poses[0].FindKeypoint('left_wrist')
@@ -116,21 +123,25 @@ def f_easy(frame_received, confidence_threshold=0.1):
             
             if left_wrist_idx > 0:
                 left_wrist = poses[0].Keypoints[left_wrist_idx]
-                neck = poses[0].Keypoints[poses[0].FindKeypoint('neck')]
                 left_elbow = poses[0].Keypoints[poses[0].FindKeypoint('left_elbow')]
-                
-                if left_wrist.x < neck.x or abs(left_wrist.y - left_elbow.y) < 40:
+                rigth_elbow = poses[0].Keypoints[poses[0].FindKeypoint('right_elbow')]
+                neck = poses[0].Keypoints[poses[0].FindKeypoint('neck')]
+                rigth_wrist = poses[0].Keypoints[rigth_wrist_idx]
+
+                if (abs(left_wrist.y - left_elbow.y) < 20 or abs(left_wrist.x - rigth_elbow.x) < 40 or abs(rigth_wrist.y - rigth_elbow.y) < 20 or abs(rigth_wrist.x - left_elbow.x) < 40) and (left_wrist.y > neck.y or rigth_wrist.y > neck.y) and (left_elbow.y > neck.y and rigth_elbow.y > neck.y):
                     print("yessss")
                     time.sleep(0.25)
                     step+=1
                     is_command_sounded = False
 
             elif rigth_wrist_idx > 0:
-                rigth_wrist = poses[0].Keypoints[rigth_wrist_idx]
-                neck = poses[0].Keypoints[poses[0].FindKeypoint('neck')]
+                left_wrist = poses[0].Keypoints[left_wrist_idx]
+                left_elbow = poses[0].Keypoints[poses[0].FindKeypoint('left_elbow')]
                 rigth_elbow = poses[0].Keypoints[poses[0].FindKeypoint('right_elbow')]
-                
-                if rigth_wrist.x > neck.x or abs(rigth_wrist.y - rigth_elbow.y) < 40:
+                neck = poses[0].Keypoints[poses[0].FindKeypoint('neck')]
+                rigth_wrist = poses[0].Keypoints[rigth_wrist_idx]
+
+                if (abs(left_wrist.y - left_elbow.y) < 20 or abs(left_wrist.x - rigth_elbow.x) < 40 or abs(rigth_wrist.y - rigth_elbow.y) < 20 or abs(rigth_wrist.x - left_elbow.x) < 40) and (left_wrist.y > neck.y or rigth_wrist.y > neck.y) and (left_elbow.y > neck.y and rigth_elbow.y > neck.y):
                     print("yessss")
                     step+=1
                     is_command_sounded = False
@@ -167,12 +178,17 @@ def f_easy(frame_received, confidence_threshold=0.1):
             try:
                 #print(left_foot[0] - keypoints[15][0], "    ---------------------------      ", right_foot[0] - keypoints[16][0])
                 #print(left_foot[0], " --------- ", keypoints[15][0], "    --------------      ", right_foot[0], " ---------------- ", keypoints[16][0], " ++++++++ ", keypoints[15][2], " ++++ ", keypoints[16][2])
-                if (abs(left_foot.y - poses[0].Keypoints[poses[0].FindKeypoint('left_ankle')].y) > 20 or right_foot[0] - poses[0].Keypoints[poses[0].FindKeypoint('right_ankle').y] > 20):
+                if (abs(left_foot.y - poses[0].Keypoints[poses[0].FindKeypoint('left_ankle')].y) > 15 or right_foot[0] - poses[0].Keypoints[poses[0].FindKeypoint('right_ankle').y] > 15):
                     print("yes33333")
                     step +=1
                     is_command_sounded = False
+                    
+                    end_time = time.time()
+                    total_time = int(end_time - start_time)
+                    send_sms = "1_" + str(total_time)
+                    serial_reader.f_send_data(send_sms)
                     f_reset_vars()
-                    f_send_data("1")
+                    serial_reader.received_data = ""
             except:
                 pass
                 #print("exception")
@@ -202,7 +218,7 @@ def f_easy(frame_received, confidence_threshold=0.1):
 
 
 def f_medium(frame_received, confidence_threshold=0.1):
-    global step, is_command_sounded, left_foot, right_foot, i_clap, is_game_finished
+    global step, is_command_sounded, left_foot, right_foot, i_clap, is_game_finished, start_time, end_time
 
     poses = f_detect(frame_received)
 
@@ -217,6 +233,7 @@ def f_medium(frame_received, confidence_threshold=0.1):
                 print("hola")
                 left_foot = None
                 is_command_sounded = True
+                start_time = time.time()
                 #left_foot = keypoints[15]
                 #right_foot = keypoints[16]
             
@@ -254,6 +271,7 @@ def f_medium(frame_received, confidence_threshold=0.1):
                     is_command_sounded = False
                     i_clap = 0
                     left_foot, right_foot = None
+                    time.sleep(0.5)
                                     
             except:
                 pass
@@ -275,9 +293,9 @@ def f_medium(frame_received, confidence_threshold=0.1):
             if left_wrist_idx > 0:
                 left_wrist = poses[0].Keypoints[left_wrist_idx]
                 neck = poses[0].Keypoints[poses[0].FindKeypoint('neck')]
-                left_shoulder = poses[0].Keypoints[poses[0].FindKeypoint('left_shoulder')]
+                #left_shoulder = poses[0].Keypoints[poses[0].FindKeypoint('left_shoulder')]
                 
-                if (int(left_wrist.y - neck.y) < 30 and int(left_wrist.y - neck.y) > -30):
+                if (int(left_wrist.y - neck.y) < 40 and int(left_wrist.y - neck.y) > -40):
                     print("yessss")
                     step+=1
                     is_command_sounded = False
@@ -308,7 +326,7 @@ def f_medium(frame_received, confidence_threshold=0.1):
                     print("***************************************")
                     print("***************************************")
                     print("yes")
-                    time.sleep(3.5)
+                    time.sleep(2.5)
                     #pass
                     #left_foot = poses[0].Keypoints[poses[0].FindKeypoint('left_ankle')]
                     #right_foot = poses[0].Keypoints[poses[0].FindKeypoint('right_ankle')]
@@ -324,8 +342,13 @@ def f_medium(frame_received, confidence_threshold=0.1):
                     step += 1
                     is_command_sounded = False
                     i_clap = 0
+                    
+                    end_time = time.time()
+                    total_time = int(end_time - start_time)
+                    send_sms = "1_" + str(total_time)
+                    serial_reader.f_send_data(send_sms)
                     f_reset_vars()
-                    f_send_data("1")
+                    serial_reader.received_data = ""
                                     
             except:
                 pass
@@ -335,7 +358,7 @@ def f_medium(frame_received, confidence_threshold=0.1):
 
 
 def f_hard(frame_received, confidence_threshold=0.4):
-    global step, is_command_sounded, right_hand
+    global step, is_command_sounded, right_hand, start_time, end_time
 
     poses = f_detect(frame_received)
 
@@ -349,16 +372,19 @@ def f_hard(frame_received, confidence_threshold=0.4):
                 #reproduce_sound.f_movenet()
                 reproduce_sound.f_dif_movenet(step+1)
                 is_command_sounded = True
+                start_time = time.time()
+
 
             rigth_wrist_idx = poses[0].FindKeypoint('right_wrist')
-            rigth_elbow_idx = poses[0].FindKeypoint('right_elbow')
+            #rigth_elbow_idx = poses[0].FindKeypoint('right_elbow')
 
             if rigth_wrist_idx > 0:
                 rigth_wrist = poses[0].Keypoints[rigth_wrist_idx]
                 rigth_elbow = poses[0].Keypoints[poses[0].FindKeypoint('right_elbow')]
+                rigth_shoulder = poses[0].Keypoints[poses[0].FindKeypoint('right_shoulder')]
                 
                 
-                if rigth_wrist.y < rigth_elbow.y:
+                if rigth_wrist.y < rigth_elbow.y and abs(rigth_wrist.y - rigth_shoulder.y) < 50:
                     print("yessss")
                     step+=1
                     time.sleep(1)
@@ -396,20 +422,23 @@ def f_hard(frame_received, confidence_threshold=0.4):
             if left_wrist_idx > 0 and left_elbow_idx:
                 left_wrist = poses[0].Keypoints[left_wrist_idx]
                 left_elbow = poses[0].Keypoints[poses[0].FindKeypoint('left_elbow')]
+                left_shoulder = poses[0].Keypoints[poses[0].FindKeypoint('left_shoulder')]
                 
-                
-                if left_wrist.y < left_elbow.y:
+                if left_wrist.y < left_elbow.y and abs(left_shoulder.y - left_wrist.y)<35:
                     print("yessss")
                     step+=1
                     time.sleep(1)
                     is_command_sounded = False
+                    end_time = time.time()
+                    total_time = int(end_time - start_time)
+                    send_sms = "1_" + str(total_time)
+                    serial_reader.f_send_data(send_sms)
                     f_reset_vars()
-                    f_send_data("1")
+                    serial_reader.received_data = ""
 
 
 
-
-
+"""
 if __name__ == "__main__":
     f_load_model()
     f_reset_vars()
@@ -431,13 +460,13 @@ if __name__ == "__main__":
         #f_medium(img)
         f_hard(img)
         # perform pose estimation (with overlay)
-        """poses = f_detect(img)
+        poses = f_detect(img)
 
         # print the pose results
         print("detected {:d} objects in image".format(len(poses)))
 
-        print(poses[0].Keypoints)
-        print(poses[0].ID)
+        #print(poses[0].Keypoints)
+        #print(poses[0].ID)
 
         
         for pose in poses:
@@ -446,7 +475,7 @@ if __name__ == "__main__":
             print('Links', pose.Links)
 
         # render the image
-        output.Render(img)"""
+        output.Render(img)
 
         # update the title bar
         output.SetStatus("{:s} | Network {:.0f} FPS".format("hhh", net.GetNetworkFPS()))
@@ -458,41 +487,5 @@ if __name__ == "__main__":
         if not input.IsStreaming() or not output.IsStreaming():
             break
 
-
-    """
-
-    # create video sources & outputs
-    video_capture = cv2.VideoCapture(0, cv2.CAP_V4L2)
-    video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
-    video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 360) # Replace 'args.input' with your video file or camera index
-
-
-    # process frames until EOS or the user exits
-    while True:
-        # capture the next image
-        ret, frame = video_capture.read()
-
-        if not ret:  # check if the frame was read successfully
-            break
-
-        # print the pose results
-        print("detected {:d} objects in image".format(len(poses)))
-
-        for pose in poses:
-            print(pose)
-            print(pose.Keypoints)
-            print('Links', pose.Links)
-
-        # render the image - Replace with your rendering logic
-        # output.Render(img)
-        key = cv2.waitKey(1) & 0xFF
-
-        # Hit 'q' on the keyboard to quit!
-        if key == ord('q'):
-                # Release handle to the webcam
-            video_capture.release()
-            cv2.destroyAllWindows()
-            break
-            
-        cv2.imshow('Video', frame)"""
+"""
 
