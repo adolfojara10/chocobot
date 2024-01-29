@@ -1,6 +1,7 @@
 import serial
 import threading
 import time
+import sys
 
 global received_data, ser
 
@@ -45,11 +46,15 @@ def serial_reader():
 
             print("hola serial")
 
+            if max_retries > 0:
+                f_send_data("Bluetooth activado")
+
             while True:
                 data = rl.readline()
                 if data != "":
                     received_data = data
                     print(data)
+                    sys.stdout.flush()
         except serial.SerialException as e:
             print("SerialException:", str(e))
             # Handle the exception as needed, e.g., log the error or other actions.
@@ -68,6 +73,10 @@ def f_send_data(data_send):
 
     #ser.flushInput() #This gives the bluetooth a little kick
 
-    ser.write(str.encode(data_send))
+    try:
+        ser.write(str.encode(data_send))
 
-    print("Done")
+        print("Done")
+    except Exception as e:
+        print("no se envian datos")
+        print(e)

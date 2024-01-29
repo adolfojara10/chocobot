@@ -1,0 +1,79 @@
+# check service in live outputs
+journalctl -fu chocobot.service
+sudo journalctl -u trial3.service
+
+# restart service
+sudo systemctl daemon-reload
+sudo systemctl stop trial3.service
+sudo systemctl restart trial3.service
+
+# editar .service
+sudo vi /etc/systemd/system/chocobot.service
+
+# dar permisos
+sudo chmod 744 /code/scripts/myapp.sh
+sudo chmod 664 /etc/systemd/system/chocobot.service
+
+# autorizar el demonio
+sudo systemctl daemon-reload
+sudo systemctl enable chocobot.service
+
+# iniciar servicio
+sudo systemctl start chocobot.service
+
+# estado
+sudo systemctl status chocobot.service
+
+# file chocobot.service
+[Unit]
+Description=trial3
+
+[Service]
+User=catedra
+Type=simple
+Environment="DISPLAY=:0"
+# Environment="/usr/bin/python3"
+# Environment="PATH=/usr/local/bin:/usr/bin:/bin"
+# Environment="LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/lib"
+ExecStart=/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/myapp.sh
+WorkingDirectory=/home/catedra/Desktop/chocobot/chocobot/face-bluetooth
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+# file myapp.sh
+#!/bin/bash
+
+# unset DISPLAY
+# export HOME=/home/catedra
+# export USER=catedra
+export PYTHON_EXECUTABLE="/usr/bin/python3"
+
+$PYTHON_EXECUTABLE /home/catedra/Desktop/chocobot/chocobot/face-bluetooth/main_app.py
+
+
+
+# sudo visudo
+ALL ALL=(ALL) NOPASSWD: /home/catedra/Desktop/audio/trial2.py
+ALL ALL=(ALL) NOPASSWD: /home/catedra/Desktop/audio/trial1.py
+catedra ALL=(ALL) NOPASSWD: /home/catedra/Desktop/audio/trial2.py
+catedra ALL=(ALL) NOPASSWD: /home/catedra/Desktop/audio/trial1.py
+
+catedra ALL=(ALL) NOPASSWD: /home/catedra/Desktop/chocobot/chocobot/face-bluetooth/main_app.py
+ALL ALL=(ALL) NOPASSWD: /home/catedra/Desktop/chocobot/chocobot/face-bluetooth/main_app.py
+
+catedra ALL=(ALL) NOPASSWD: /home/catedra/Desktop/chocobot/chocobot/face-bluetooth/myapp.sh
+ALL ALL=(ALL) NOPASSWD: /home/catedra/Desktop/chocobot/chocobot/face-bluetooth/myapp.sh
+
+catedra ALL=(ALL) NOPASSWD: ALL
+
+
+
+######change audio output
+https://how.wtf/how-to-set-default-audio-in-ubuntu.html
+
+
+
+

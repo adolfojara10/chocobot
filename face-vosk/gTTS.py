@@ -1,26 +1,21 @@
-# Import the required module for text
-# to speech conversion
 from gtts import gTTS
-
-# This module is imported so that we can
-# play the converted audio
 import os
 
-# The text that you want to convert to audio
-mytext = 'Hola, bienvenido'
-
-# Language in which you want to convert
+mytext = 'Lo estás haciendo bien, intentémoslo de nuevo'
 language = 'es'
 
-# Passing the text and language to the engine,
-# here we have marked slow=False. Which tells
-# the module that the converted audio should
-# have a high speed
-myobj = gTTS(text=mytext, lang=language, slow=True)
+# Specify the directory in the home folder
+audio_dir = os.path.expanduser('/home/catedra/Desktop/chocobot/chocobot/face-bluetooth/audios/bad/')
 
-# Saving the converted audio in a mp3 file named
-# welcome
-#myobj.save("welcome.mp3")
+# Ensure the directory exists, create it if necessary
+os.makedirs(audio_dir, exist_ok=True)
 
-# Playing the converted file
-os.system("/home/catedra/Desktop/chocobot/chocobot/welcome.mp3")
+# Specify the path for the MP3 file
+audio_path = os.path.join(audio_dir, '3.mp3')
+
+# Generate the audio file
+myobj = gTTS(text=mytext, lang=language, slow=False)
+myobj.save(audio_path)
+
+# Playing the generated file
+#os.system(f"xdg-open {audio_path}")
