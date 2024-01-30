@@ -26,5 +26,20 @@ sudo pip3 install -U pip testresources setuptools numpy==1.16.1 future==0.17.1 m
 
 sudo pip3 install --pre --extra-index-url https://developer.download.nvidia.com/compute/redist/jp/v44 'tensorflow>2'
 
+pygame:
+sudo apt-get install python3-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libsdl2-dev libsmpeg-dev python3-numpy subversion libportmidi-dev ffmpeg libswscale-dev libavformat-dev libavcodec-dev libfreetype6-dev
+python3 -m pip install pygame==2.0.0
+
+error nvidia-l4t-bootloader
+        nvidia-l4t-xusb-firmware
+        nvidia-l4t-initrd (https://forums.developer.nvidia.com/t/apt-upgrade-on-fresh-jetsonnano-install-fails/236005/7):
+sudo mv /var/lib/dpkg/info/ /var/lib/dpkg/backup/
+sudo mkdir /var/lib/dpkg/info/
+sudo apt-get update
+sudo apt-get -f install
+sudo mv /var/lib/dpkg/info/* /var/lib/dpkg/backup/
+sudo rm -rf /var/lib/dpkg/info
+sudo mv /var/lib/dpkg/backup/ /var/lib/dpkg/info/
+
 
 
